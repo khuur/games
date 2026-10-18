@@ -7,8 +7,15 @@
 [build.environment]
   NODE_VERSION = "24"
 
-# Each game has its own address (/hanoi, /lights-out) that the app itself handles, so any path
-# without a matching file serves index.html. Real files such as /assets/* still win.
+# A missing build file should fail as a 404, not quietly come back as the app's HTML (which is what
+# the catch-all below would do). Files that do exist are always served first.
+[[redirects]]
+  from = "/assets/*"
+  to = "/404.html"
+  status = 404
+
+# Each game has its own address (/hanoi, /sudoku…) that the app itself handles, so any other path
+# without a matching file serves index.html.
 [[redirects]]
   from = "/*"
   to = "/index.html"

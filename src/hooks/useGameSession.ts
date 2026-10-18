@@ -2,8 +2,11 @@ import { useEffect, useEffectEvent, useReducer, useState } from 'react'
 import { usePageVisible } from './usePageVisible'
 import { useStopwatch } from './useStopwatch'
 
-/** `stuck` means no legal moves are left; undo brings the game back to `playing`. */
-export type GameStatus = 'ready' | 'playing' | 'stuck' | 'won'
+/**
+ * `stuck` means no legal moves are left (undo brings the game back to `playing`); `lost` ends the
+ * game, as when a mine goes off.
+ */
+export type GameStatus = 'ready' | 'playing' | 'stuck' | 'lost' | 'won'
 
 interface GameSessionOptions<S, A> {
   reducer: (state: S, action: A) => S

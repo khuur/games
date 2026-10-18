@@ -131,6 +131,90 @@ class SoundEngine {
     }
   }
 
+  /** A peg set into a Code Breaker row. Each colour has its own note, so a code plays as a tune. */
+  peg(color: number): void {
+    const pitch = scaleNote(color + 3)
+    this.note(pitch, { type: 'triangle', decay: 0.14, volume: 0.2 })
+    this.note(pitch * 2, { decay: 0.05, volume: 0.05 })
+  }
+
+  /** The marks for a guess, one tick each: exact matches ring high, near ones lower. */
+  marks(exact: number, near: number): void {
+    if (exact + near === 0) {
+      this.note(scaleNote(2), { type: 'triangle', delay: 0.1, decay: 0.14, volume: 0.1, glideTo: scaleNote(0) })
+      return
+    }
+    for (let i = 0; i < exact + near; i++) {
+      const pitch = i < exact ? scaleNote(12) : scaleNote(8)
+      this.note(pitch, { type: 'triangle', delay: 0.1 + i * 0.08, decay: 0.08, volume: 0.13 })
+    }
+  }
+
+  /** A game lost: a short falling phrase. */
+  lose(): void {
+    const steps = [7, 5, 3, 0]
+    steps.forEach((step, i) => {
+      this.note(scaleNote(step), { type: 'triangle', delay: i * 0.13, decay: i === 3 ? 0.5 : 0.16, volume: 0.17 })
+    })
+  }
+
+  /** Cells opening in Minesweeper: a single click, or a sweep for an opened-up area. */
+  open(cells: number): void {
+    const top = scaleNote(Math.min(12, 5 + Math.round(Math.log2(Math.max(1, cells)) * 1.6)))
+    this.note(scaleNote(5), { decay: 0.06, volume: 0.12, glideTo: top })
+    if (cells > 1) this.note(top, { type: 'triangle', delay: 0.05, decay: 0.16, volume: 0.1 })
+  }
+
+  /** A flag planted (rising) or pulled out (falling). */
+  flag(planted: boolean): void {
+    const [from, to] = planted ? [scaleNote(4), scaleNote(9)] : [scaleNote(9), scaleNote(4)]
+    this.note(from, { type: 'triangle', decay: 0.09, volume: 0.15, glideTo: to })
+  }
+
+  /** A mine going off: a burst of noise that falls away, over a low thump. */
+  boom(): void {
+    if (!this.enabled) return
+    const context = this.ensureContext()
+    if (!context || !this.output) return
+    const start = context.currentTime
+    const length = Math.floor(context.sampleRate * 0.9)
+    const buffer = context.createBuffer(1, length, context.sampleRate)
+    const samples = buffer.getChannelData(0)
+    for (let i = 0; i < length; i++) samples[i] = Math.random() * 2 - 1
+    const noise = context.createBufferSource()
+    noise.buffer = buffer
+    const filter = context.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(2400, start)
+    filter.frequency.exponentialRampToValueAtTime(120, start + 0.8)
+    const envelope = context.createGain()
+    envelope.gain.setValueAtTime(0.0001, start)
+    envelope.gain.exponentialRampToValueAtTime(0.5, start + 0.01)
+    envelope.gain.exponentialRampToValueAtTime(0.0001, start + 0.85)
+    noise.connect(filter)
+    filter.connect(envelope)
+    envelope.connect(this.output)
+    noise.start(start)
+    noise.stop(start + 0.9)
+    this.note(110, { type: 'sine', attack: 0.01, decay: 0.5, volume: 0.4, glideTo: 40 })
+    navigator.vibrate?.([60, 40, 90])
+  }
+
+  /** A digit written into a Sudoku cell; pencil notes are lighter. */
+  digit(value: number, pencil: boolean): void {
+    const pitch = scaleNote(value + 1)
+    if (pencil) this.note(pitch * 2, { decay: 0.05, volume: 0.07 })
+    else this.note(pitch, { type: 'triangle', decay: 0.16, volume: 0.2 })
+  }
+
+  /** A row, column or box finished: a little upward run. */
+  chime(): void {
+    const steps = [7, 9, 12]
+    steps.forEach((step, i) => {
+      this.note(scaleNote(step), { type: 'triangle', delay: 0.08 + i * 0.07, decay: 0.2, volume: 0.12 })
+    })
+  }
+
   error(): void {
     this.note(220, { type: 'square', decay: 0.07, volume: 0.045, glideTo: 185 })
     this.note(165, { type: 'square', delay: 0.09, decay: 0.12, volume: 0.045, glideTo: 130 })

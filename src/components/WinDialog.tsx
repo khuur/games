@@ -16,22 +16,33 @@ interface WinDialogProps {
   result: WinResult
   /** Title for a perfect result. */
   perfectTitle?: string
+  /** Title for any other result the player reached alone. */
+  solvedTitle?: string
   /** Shown after a perfect result, e.g. why that number of moves is the minimum. */
   perfectNote: ReactNode
   actions: WinAction[]
   onClose: () => void
 }
 
-export function WinDialog({ result, perfectTitle = 'Perfect solve!', perfectNote, actions, onClose }: WinDialogProps) {
+export function WinDialog({
+  result,
+  perfectTitle = 'Perfect solve!',
+  solvedTitle = 'Puzzle solved!',
+  perfectNote,
+  actions,
+  onClose,
+}: WinDialogProps) {
   const titleId = useId()
   const bySolver = result.assistedBy === 'solver'
 
-  const title = bySolver ? 'Solved by the computer' : result.perfect ? perfectTitle : 'Puzzle solved!'
+  const title = bySolver ? 'Solved by the computer' : result.perfect ? perfectTitle : solvedTitle
 
   let note: ReactNode
   if (bySolver) note = 'The auto-solver finished this one. Best scores only count when you solve it yourself.'
   else if (result.assistedBy === 'hints')
-    note = `You used ${plural(result.hintsUsed, 'hint')}, so this solve doesn't count toward your best scores.`
+    note =
+      result.assistNote ??
+      `You used ${plural(result.hintsUsed, 'hint')}, so this solve doesn't count toward your best scores.`
   else if (result.perfect) note = perfectNote
   else note = result.improveNote
 
@@ -46,7 +57,7 @@ export function WinDialog({ result, perfectTitle = 'Perfect solve!', perfectNote
 
       <dl className="win-stats">
         <div>
-          <dt>Moves</dt>
+          <dt>{result.movesLabel ?? 'Moves'}</dt>
           <dd>{result.moves}</dd>
         </div>
         <div>

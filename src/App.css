@@ -53,25 +53,51 @@
   gap: 8px;
 }
 
-/* Game tabs: a segmented control whose highlight slides over to the active game. */
+/* Game tabs: a segmented control whose highlight slides over to the active game. When the tabs
+   don't all fit (on phones), the strip scrolls sideways and fades at the edge with more to show. */
 
 .game-tabs {
-  position: relative;
-  display: grid;
+  --tab-min: 82px;
   grid-area: tabs;
-  grid-template-columns: repeat(var(--tab-count), minmax(0, 1fr));
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
   padding: 4px;
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--surface-sunken);
+  scrollbar-width: none;
+}
+
+.game-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.game-tabs[data-overflow='right'] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent);
+}
+
+.game-tabs[data-overflow='left'] {
+  mask-image: linear-gradient(to left, #000 calc(100% - 36px), transparent);
+}
+
+.game-tabs[data-overflow='both'] {
+  mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent);
+}
+
+.game-tabs-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--tab-count), minmax(var(--tab-min), 1fr));
+  width: 100%;
+  min-width: calc(var(--tab-count) * var(--tab-min));
 }
 
 .game-tabs-indicator {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 4px;
-  width: calc((100% - 8px) / var(--tab-count));
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(100% / var(--tab-count));
   border-radius: 12px;
   background: var(--surface-solid);
   box-shadow: var(--shadow-tab);
@@ -82,15 +108,18 @@
 .game-tab {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 18px;
+  gap: 3px;
+  min-width: 0;
+  min-height: 56px;
+  padding: 6px 4px;
   border-radius: 12px;
   color: var(--text-muted);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 800;
+  line-height: 1.15;
   text-decoration: none;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
@@ -104,8 +133,8 @@
 
 .game-tab .game-icon {
   flex: none;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   transition:
     filter 200ms ease,
     opacity 200ms ease;
@@ -117,23 +146,27 @@
 }
 
 .game-tab-label {
-  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.game-tab-label.short {
+/* Full names where every tab has room for one, short names elsewhere. */
+.game-tab-label {
   display: none;
 }
 
-/* Short names once the full ones stop fitting, then icons above the names on phones. */
-@media (max-width: 920px) {
+.game-tab-label.short {
+  display: inline;
+}
+
+@media (min-width: 1000px) {
   .game-tab-label {
-    display: none;
+    display: inline;
   }
 
   .game-tab-label.short {
-    display: inline;
+    display: none;
   }
 }
 
@@ -143,15 +176,8 @@
   }
 
   .game-tab {
-    flex-direction: column;
-    gap: 3px;
     min-height: 54px;
-    padding: 6px 2px;
     font-size: 12px;
-  }
-
-  .game-tab-label.short {
-    max-width: 100%;
   }
 }
 
@@ -164,14 +190,12 @@
     gap: 6px;
   }
 
-  .game-tab {
-    font-size: 11px;
+  .game-tabs {
+    --tab-min: 78px;
   }
-}
 
-@media (max-width: 350px) {
   .game-tab {
-    font-size: 10px;
+    font-size: 11.5px;
   }
 }
 

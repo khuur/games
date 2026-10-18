@@ -43,7 +43,11 @@ export default function App() {
   }, [soundOn])
 
   useEffect(() => {
-    const unlockAudio = () => sound.unlock()
+    const unlockAudio = (event: Event) => {
+      // Browsers don't count a modifier key on its own as a gesture that may start audio.
+      if (event instanceof KeyboardEvent && ['Shift', 'Control', 'Alt', 'Meta'].includes(event.key)) return
+      sound.unlock()
+    }
     window.addEventListener('pointerdown', unlockAudio)
     window.addEventListener('keydown', unlockAudio)
     return () => {

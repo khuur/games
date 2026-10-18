@@ -15,7 +15,7 @@ interface StatsBarProps {
 export function StatsBar({ progress, elapsedMs, status, timerPaused, bestTimeMs, bestNote }: StatsBarProps) {
   let timeNote = ''
   if (status === 'ready') timeNote = 'Not started'
-  else if (status === 'stuck') timeNote = 'Stopped'
+  else if (status === 'stuck' || status === 'lost') timeNote = 'Stopped'
   else if (status === 'playing' && timerPaused) timeNote = 'Paused'
 
   return (

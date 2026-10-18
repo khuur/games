@@ -1,6 +1,6 @@
 # Puzzle Games
 
-Five classic puzzles as React games, each on its own tab:
+Eight classic puzzles as React games, each on its own tab:
 
 - **Tower of Hanoi:** move the whole tower to the goal peg, one disk at a time, never putting a
   bigger disk on a smaller one.
@@ -8,6 +8,11 @@ Five classic puzzles as React games, each on its own tab:
 - **15 Puzzle:** slide the numbered tiles back into order.
 - **Peg Solitaire:** jump pegs over each other until one is left, ideally in the centre.
 - **Water Sort:** pour coloured water between tubes until each tube holds a single colour.
+- **Code Breaker:** crack a hidden code of coloured pegs from the marks each guess earns (the game
+  better known as Mastermind).
+- **Minesweeper:** open every cell that isn't a mine, using the numbers. No board ever needs a
+  guess.
+- **Sudoku:** fill the grid so every row, column and box holds 1 to 9.
 
 Built with React 19, TypeScript and Vite. No backend: it is a static site, ready for Netlify.
 
@@ -15,9 +20,11 @@ Built with React 19, TypeScript and Vite. No backend: it is a static site, ready
 
 Every game has:
 
-- A move counter with a target to aim for, a timer, star ratings and best scores per level
-- Undo and redo, a **hint** that works from any position, and an **auto-solver** with adjustable
+- A score with a target to aim for (moves against the minimum, guesses or clicks against par, or
+  mistakes), a timer, star ratings and best times per level
+- A **hint** that works from any position and says why, and an **auto-solver** with adjustable
   speed (solves made with help don't count as best scores)
+- Undo and redo wherever they make sense (Minesweeper lets you take back a mine instead)
 - Mouse, touch and full keyboard control
 - Animations, synthesized sound effects, confetti, light and dark themes, reduced-motion support
   and screen-reader announcements
@@ -30,13 +37,16 @@ Every game has:
 | 15 Puzzle | 3×3 to 5×5, random puzzles | Exact on 3×3; bigger boards show a *par* from the classic row-by-row method |
 | Peg Solitaire | Triangle and English boards | A jump that keeps the perfect finish (last peg in the goal hole) possible |
 | Water Sort | 3 to 9 colours, random puzzles | Exact: the fewest pours |
+| Code Breaker | Easy, Classic, Hard (5 pegs, 8 colours) | A strong next guess and how far it narrows the codes; *par* is the most guesses the computer's strategy needs |
+| Minesweeper | Easy, Medium, Hard, every board solvable without guessing | The next thing the numbers prove, and why; *par* is the board's 3BV (clicks without flags or chords) |
+| Sudoku | Easy, Medium, Hard, graded by technique | The next digit you can be sure of and the technique that finds it; the score is mistakes |
 
 Keyboard everywhere: <kbd>Z</kbd> undo, <kbd>Y</kbd> redo, <kbd>H</kbd> hint, <kbd>M</kbd> sound,
-<kbd>?</kbd> help. Each game's help explains its own keys (number keys pick towers and tubes, arrow
-keys move tiles or walk around grids and boards).
+<kbd>?</kbd> help. Each game's help explains its own keys (number keys pick towers, tubes, colours
+and digits; arrow keys move tiles or walk around grids and boards).
 
 Each game has its own address (`/hanoi`, `/lights-out`, `/15-puzzle`, `/peg-solitaire`,
-`/water-sort`), and `/` opens the game played last.
+`/water-sort`, `/code-breaker`, `/minesweeper`, `/sudoku`), and `/` opens the game played last.
 
 ## Development
 
@@ -80,6 +90,7 @@ src/
   games/
     index.ts     the list of games
     hanoi/  lights-out/  fifteen/  peg-solitaire/  water-sort/
+    code-breaker/  minesweeper/  sudoku/
                  each game: rules and solver, game state, saving, board and help
   components/    shared UI: controls, dialogs, stats, status line, stepper, confetti…
   hooks/         shared behaviour: game session (state, clock, saving), auto-solver, routing…
@@ -103,6 +114,17 @@ reducer, which keeps them easy to test. The solvers:
 - **Water Sort:** an A* search that ignores the order of the tubes. Each pour merges at most one
   pair of colour blocks, so counting the blocks beyond one per colour never overestimates the pours
   left, which keeps the first solution found a shortest one.
+- **Code Breaker:** Donald Knuth's minimax rule: play the guess whose worst possible answer leaves
+  the fewest codes. It never needs more than five guesses on Classic. Hard has 32,768 codes, so
+  there it weighs a sample of guesses against a sample of codes to stay quick.
+- **Minesweeper:** reasons only from the numbers on show: one number at a time, then two together,
+  then every way the mines could sit around the numbers, given how many mines are left. Mines are
+  laid at the first click, and a layout is kept only if this solver can clear it from there, so no
+  board ever needs a guess.
+- **Sudoku:** a bitmask search with the most constrained cell first makes sure a puzzle keeps exactly
+  one solution as clues are removed. A second solver works like a person (singles, then pointing
+  pairs, box-line reductions, naked and hidden pairs, naked triples); it grades each puzzle and
+  explains hints.
 
 Tests check the solvers against brute-force searches on small boards.
 

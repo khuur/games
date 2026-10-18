@@ -1,4 +1,7 @@
 import type { ComponentType } from 'react'
+import { CodeBreakerGame } from './code-breaker/CodeBreakerGame'
+import { CodeBreakerHelp } from './code-breaker/CodeBreakerHelp'
+import { CodeBreakerIcon } from './code-breaker/CodeBreakerIcon'
 import { FifteenGame } from './fifteen/FifteenGame'
 import { FifteenHelp } from './fifteen/FifteenHelp'
 import { FifteenIcon } from './fifteen/FifteenIcon'
@@ -8,9 +11,15 @@ import { HanoiIcon } from './hanoi/HanoiIcon'
 import { LightsOutGame } from './lights-out/LightsOutGame'
 import { LightsOutHelp } from './lights-out/LightsOutHelp'
 import { LightsOutIcon } from './lights-out/LightsOutIcon'
+import { MinesweeperGame } from './minesweeper/MinesweeperGame'
+import { MinesweeperHelp } from './minesweeper/MinesweeperHelp'
+import { MinesweeperIcon } from './minesweeper/MinesweeperIcon'
 import { PegHelp } from './peg-solitaire/PegHelp'
 import { PegIcon } from './peg-solitaire/PegIcon'
 import { PegSolitaireGame } from './peg-solitaire/PegSolitaireGame'
+import { SudokuGame } from './sudoku/SudokuGame'
+import { SudokuHelp } from './sudoku/SudokuHelp'
+import { SudokuIcon } from './sudoku/SudokuIcon'
 import { WaterSortGame } from './water-sort/WaterSortGame'
 import { WaterSortHelp } from './water-sort/WaterSortHelp'
 import { WaterSortIcon } from './water-sort/WaterSortIcon'
@@ -79,5 +88,32 @@ export const GAMES: readonly GameInfo[] = [
     Icon: WaterSortIcon,
     Game: WaterSortGame,
     Help: WaterSortHelp,
+  },
+  {
+    id: 'code-breaker',
+    path: '/code-breaker',
+    title: 'Code Breaker',
+    shortTitle: 'Codebreaker',
+    Icon: CodeBreakerIcon,
+    Game: CodeBreakerGame,
+    Help: CodeBreakerHelp,
+  },
+  {
+    id: 'minesweeper',
+    path: '/minesweeper',
+    title: 'Minesweeper',
+    shortTitle: 'Mines',
+    Icon: MinesweeperIcon,
+    Game: MinesweeperGame,
+    Help: MinesweeperHelp,
+  },
+  {
+    id: 'sudoku',
+    path: '/sudoku',
+    title: 'Sudoku',
+    shortTitle: 'Sudoku',
+    Icon: SudokuIcon,
+    Game: SudokuGame,
+    Help: SudokuHelp,
   },
 ]

@@ -1,0 +1,308 @@
+:root {
+  --mine-hidden-top: #eceff9;
+  --mine-hidden-bottom: #d8deef;
+  --mine-hidden-hover: #f6f7fd;
+  --mine-hidden-shine: rgb(255 255 255 / 0.9);
+  --mine-hidden-edge: rgb(30 36 70 / 0.17);
+  --mine-open: rgb(30 36 70 / 0.04);
+  --mine-open-edge: rgb(30 36 70 / 0.07);
+  --mine-n1: #2d6ae0;
+  --mine-n2: #18884a;
+  --mine-n3: #d5333e;
+  --mine-n4: #2e3aa3;
+  --mine-n5: #9b2f20;
+  --mine-n6: #0e8190;
+  --mine-n7: #1b2036;
+  --mine-n8: #6b7290;
+  --mine-flag: #e5484d;
+  --mine-body: #262b4a;
+  --mine-shine: rgb(255 255 255 / 0.75);
+}
+
+:root[data-theme='dark'] {
+  --mine-hidden-top: #2f355c;
+  --mine-hidden-bottom: #242a4b;
+  --mine-hidden-hover: #39406b;
+  --mine-hidden-shine: rgb(255 255 255 / 0.08);
+  --mine-hidden-edge: rgb(0 0 0 / 0.4);
+  --mine-open: rgb(255 255 255 / 0.025);
+  --mine-open-edge: rgb(255 255 255 / 0.05);
+  --mine-n1: #7ea9ff;
+  --mine-n2: #5dd28d;
+  --mine-n3: #ff7d84;
+  --mine-n4: #aaa6ff;
+  --mine-n5: #ffa47d;
+  --mine-n6: #52d4de;
+  --mine-n7: #eceefa;
+  --mine-n8: #a6acc8;
+  --mine-flag: #ff6b73;
+  --mine-body: #e3e6f6;
+  --mine-shine: rgb(20 24 50 / 0.55);
+}
+
+.mine-area {
+  position: absolute;
+  inset: 12px;
+  display: grid;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.mine-board {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: var(--gap);
+  margin: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* A cell: a raised tile while hidden, a flat well once open. */
+
+.mine-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--cell) * 0.2);
+  background: linear-gradient(180deg, var(--mine-hidden-top), var(--mine-hidden-bottom));
+  box-shadow:
+    inset 0 1px 0 var(--mine-hidden-shine),
+    inset 0 -2px 0 var(--mine-hidden-edge);
+  color: var(--text);
+  font-size: calc(var(--cell) * 0.56);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 120ms ease,
+    transform 120ms ease;
+}
+
+@media (hover: hover) {
+  .mine-board:not(.is-locked) .mine-cell:not(.is-open):hover {
+    background: var(--mine-hidden-hover);
+  }
+}
+
+.mine-board:not(.is-locked) .mine-cell:not(.is-open):active {
+  transform: scale(0.92);
+}
+
+.mine-cell:focus-visible {
+  z-index: 2;
+  outline-offset: 1px;
+}
+
+.mine-board.is-locked .mine-cell {
+  cursor: default;
+}
+
+.mine-cell.is-open {
+  background: var(--mine-open);
+  box-shadow: inset 0 0 0 1px var(--mine-open-edge);
+  cursor: default;
+  animation: mine-open 280ms ease-out backwards;
+  animation-delay: calc(var(--ripple) * 22ms);
+}
+
+/* Numbers can be chorded, so they stay clickable. */
+.mine-board:not(.is-locked) .mine-cell.is-number {
+  cursor: pointer;
+}
+
+.mine-cell.n1 {
+  color: var(--mine-n1);
+}
+.mine-cell.n2 {
+  color: var(--mine-n2);
+}
+.mine-cell.n3 {
+  color: var(--mine-n3);
+}
+.mine-cell.n4 {
+  color: var(--mine-n4);
+}
+.mine-cell.n5 {
+  color: var(--mine-n5);
+}
+.mine-cell.n6 {
+  color: var(--mine-n6);
+}
+.mine-cell.n7 {
+  color: var(--mine-n7);
+}
+.mine-cell.n8 {
+  color: var(--mine-n8);
+}
+
+.mine-cell svg {
+  width: 66%;
+  height: 66%;
+}
+
+.mine-flag {
+  color: var(--text);
+  animation: mine-flag-in 260ms cubic-bezier(0.3, 1.6, 0.5, 1);
+  transform-origin: 35% 90%;
+}
+
+.mine-icon {
+  color: var(--mine-body);
+}
+
+.mine-cell.is-mine {
+  background: var(--mine-open);
+  box-shadow: inset 0 0 0 1px var(--mine-open-edge);
+}
+
+.mine-cell.is-mine .mine-icon {
+  animation: mine-appear 320ms cubic-bezier(0.3, 1.5, 0.5, 1) backwards;
+  animation-delay: calc(var(--blast) * 55ms + 150ms);
+}
+
+.mine-cell.is-exploded {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
+
+.mine-cell.is-exploded .mine-icon {
+  color: #fff;
+  animation: mine-blast 420ms ease-out;
+}
+
+/* A flag on a safe cell, shown once the game is lost. */
+.mine-cell.is-wrong::after {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  background:
+    linear-gradient(45deg, transparent 44%, var(--danger) 44%, var(--danger) 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, var(--danger) 44%, var(--danger) 56%, transparent 56%);
+}
+
+.mine-board.is-lost {
+  animation: mine-shake 420ms ease-in-out;
+}
+
+/* Cleared: a wave of light runs across the board. */
+.mine-board.is-won .mine-cell {
+  animation: mine-wave 700ms ease-in-out calc(250ms + var(--wave) * 30ms);
+}
+
+/* Hints: the cells to act on pulse, and the numbers that prove it are marked. */
+
+.mine-cell.is-clue {
+  background: var(--hint-soft);
+  box-shadow: inset 0 0 0 2px var(--hint);
+}
+
+.mine-cell[class*='is-hint-']::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  z-index: 1;
+  border: 3px solid var(--success);
+  border-radius: calc(var(--cell) * 0.2 + 3px);
+  pointer-events: none;
+  animation: mine-hint 1.1s ease-in-out infinite;
+}
+
+.mine-cell.is-hint-mine::after {
+  border-color: var(--danger);
+}
+
+.mine-cell.is-hint-wrong-flag::after {
+  border-color: var(--hint);
+}
+
+@keyframes mine-open {
+  from {
+    opacity: 0.2;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes mine-flag-in {
+  from {
+    opacity: 0;
+    transform: scale(0.3) rotate(-25deg);
+  }
+}
+
+@keyframes mine-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+@keyframes mine-blast {
+  0% {
+    transform: scale(0.4);
+  }
+  40% {
+    transform: scale(1.35);
+  }
+}
+
+@keyframes mine-shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  20% {
+    translate: -6px 0;
+  }
+  40% {
+    translate: 5px 0;
+  }
+  60% {
+    translate: -3px 0;
+  }
+  80% {
+    translate: 2px 0;
+  }
+}
+
+@keyframes mine-wave {
+  0%,
+  100% {
+    filter: none;
+    transform: none;
+  }
+  40% {
+    filter: brightness(1.15) saturate(1.3);
+    transform: scale(1.08);
+  }
+}
+
+@keyframes mine-hint {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mine-cell.is-open,
+  .mine-flag,
+  .mine-cell.is-mine .mine-icon,
+  .mine-cell.is-exploded .mine-icon,
+  .mine-board.is-lost,
+  .mine-board.is-won .mine-cell,
+  .mine-cell[class*='is-hint-']::after {
+    animation: none;
+  }
+}

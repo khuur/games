@@ -4,17 +4,22 @@ import type { ReactNode } from 'react'
 interface GameControlsProps {
   /** Picks the level: a stepper or a choice group. */
   level: ReactNode
+  /** Game-specific buttons, such as a flag mode, shown ahead of undo and restart. */
+  extra?: ReactNode
   /** Deals a new random puzzle; leave out for games with fixed puzzles. */
   onNew?: () => void
-  canUndo: boolean
-  canRedo: boolean
+  /** Undo and redo; leave out for games where moves can't be taken back. */
+  onUndo?: () => void
+  onRedo?: () => void
+  canUndo?: boolean
+  canRedo?: boolean
   canRestart: boolean
   canHint: boolean
   canSolve: boolean
   solverActive: boolean
   hintTitle: string
-  onUndo: () => void
-  onRedo: () => void
+  restartLabel?: string
+  restartIcon?: ReactNode
   onRestart: () => void
   onHint: () => void
   onToggleSolver: () => void
@@ -23,16 +28,19 @@ interface GameControlsProps {
 /** The buttons under every board: level, new puzzle, undo/redo/restart, hint and auto-solve. */
 export function GameControls({
   level,
+  extra,
   onNew,
-  canUndo,
-  canRedo,
+  onUndo,
+  onRedo,
+  canUndo = false,
+  canRedo = false,
   canRestart,
   canHint,
   canSolve,
   solverActive,
   hintTitle,
-  onUndo,
-  onRedo,
+  restartLabel = 'Restart',
+  restartIcon = <RotateCcw aria-hidden="true" />,
   onRestart,
   onHint,
   onToggleSolver,
@@ -50,24 +58,29 @@ export function GameControls({
       </div>
 
       <div className="control-group">
-        <button type="button" className="button" onClick={onUndo} disabled={!canUndo} aria-label="Undo" title="Undo (Z)">
-          <Undo2 aria-hidden="true" />
-          <span className="button-label collapsible">Undo</span>
-        </button>
-        <button type="button" className="button" onClick={onRedo} disabled={!canRedo} aria-label="Redo" title="Redo (Y)">
-          <Redo2 aria-hidden="true" />
-          <span className="button-label collapsible">Redo</span>
-        </button>
+        {extra}
+        {onUndo && (
+          <button type="button" className="button" onClick={onUndo} disabled={!canUndo} aria-label="Undo" title="Undo (Z)">
+            <Undo2 aria-hidden="true" />
+            <span className="button-label collapsible">Undo</span>
+          </button>
+        )}
+        {onRedo && (
+          <button type="button" className="button" onClick={onRedo} disabled={!canRedo} aria-label="Redo" title="Redo (Y)">
+            <Redo2 aria-hidden="true" />
+            <span className="button-label collapsible">Redo</span>
+          </button>
+        )}
         <button
           type="button"
           className="button"
           onClick={onRestart}
           disabled={!canRestart}
-          aria-label="Restart"
-          title="Restart"
+          aria-label={restartLabel}
+          title={restartLabel}
         >
-          <RotateCcw aria-hidden="true" />
-          <span className="button-label collapsible">Restart</span>
+          {restartIcon}
+          <span className="button-label collapsible">{restartLabel}</span>
         </button>
       </div>
 

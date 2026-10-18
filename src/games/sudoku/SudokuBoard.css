@@ -1,0 +1,402 @@
+:root {
+  --sudoku-line: #3d4469;
+  --sudoku-thin: rgb(30 36 70 / 0.15);
+  --sudoku-cell: #ffffff;
+  --sudoku-peer: rgb(91 85 224 / 0.07);
+  --sudoku-same: rgb(91 85 224 / 0.17);
+  --sudoku-selected: rgb(91 85 224 / 0.28);
+  --sudoku-flash: #d6f3e3;
+  --sudoku-given: #1b2036;
+  --sudoku-entry: #4a43d3;
+  --sudoku-note: #6b7290;
+}
+
+:root[data-theme='dark'] {
+  --sudoku-line: #575e8c;
+  --sudoku-thin: rgb(255 255 255 / 0.1);
+  --sudoku-cell: #151a33;
+  --sudoku-peer: rgb(141 136 255 / 0.08);
+  --sudoku-same: rgb(141 136 255 / 0.19);
+  --sudoku-selected: rgb(141 136 255 / 0.32);
+  --sudoku-flash: #1d4a3a;
+  --sudoku-given: #eceefa;
+  --sudoku-entry: #a9a5ff;
+  --sudoku-note: #9ba1bf;
+}
+
+.sudoku-board {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sudoku-board.is-wide {
+  flex-direction: row;
+}
+
+/* The grid: thick lines between boxes and thin ones between cells, drawn by the gaps. */
+
+.sudoku-grid {
+  display: grid;
+  flex: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  padding: 3px;
+  border-radius: 12px;
+  background: var(--sudoku-line);
+  box-shadow: 0 12px 30px -20px rgb(20 24 50 / 0.6);
+}
+
+.sudoku-box {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  background: var(--sudoku-thin);
+}
+
+.sudoku-box:nth-child(1) {
+  border-top-left-radius: 9px;
+}
+
+.sudoku-box:nth-child(3) {
+  border-top-right-radius: 9px;
+}
+
+.sudoku-box:nth-child(7) {
+  border-bottom-left-radius: 9px;
+}
+
+.sudoku-box:nth-child(9) {
+  border-bottom-right-radius: 9px;
+}
+
+.sudoku-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: var(--sudoku-cell);
+  color: var(--sudoku-given);
+  font-size: calc(var(--cell) * 0.58);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms ease;
+}
+
+.sudoku-cell:focus-visible {
+  z-index: 1;
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.sudoku-grid.is-locked .sudoku-cell {
+  cursor: default;
+}
+
+.sudoku-cell.is-entry {
+  color: var(--sudoku-entry);
+  font-weight: 750;
+}
+
+.sudoku-cell.is-wrong {
+  background-image: linear-gradient(var(--danger-soft), var(--danger-soft));
+  color: var(--danger);
+  font-weight: 750;
+}
+
+/* Highlights: the selected cell's row, column and box, the same digit elsewhere, and hints. */
+
+.sudoku-cell.is-peer {
+  background-image: linear-gradient(var(--sudoku-peer), var(--sudoku-peer));
+}
+
+.sudoku-cell.is-hint-unit {
+  background-image: linear-gradient(var(--hint-soft), var(--hint-soft));
+}
+
+.sudoku-cell.is-same {
+  background-image: linear-gradient(var(--sudoku-same), var(--sudoku-same));
+}
+
+.sudoku-cell.is-selected {
+  background-image: linear-gradient(var(--sudoku-selected), var(--sudoku-selected));
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.sudoku-cell.is-hinted::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 3px solid var(--hint);
+  border-radius: 5px;
+  pointer-events: none;
+  animation: sudoku-hint 1.1s ease-in-out infinite;
+}
+
+.sudoku-cell.is-given .sudoku-value {
+  animation: sudoku-in 360ms ease-out backwards;
+  animation-delay: calc(var(--wave) * 14ms);
+}
+
+.sudoku-cell:not(.is-given) .sudoku-value {
+  animation: sudoku-pop 260ms cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.sudoku-cell.is-wrong .sudoku-value {
+  animation: sudoku-shake 320ms ease-in-out;
+}
+
+/* A finished row, column or box lights up, rippling out from the last digit. */
+.sudoku-cell.is-flash {
+  animation: sudoku-flash 700ms ease-out calc(var(--flash) * 35ms);
+}
+
+.sudoku-grid.is-won .sudoku-cell {
+  animation: sudoku-wave 800ms ease-in-out calc(300ms + var(--wave) * 40ms);
+}
+
+.sudoku-notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  height: 100%;
+  padding: 7%;
+  color: var(--sudoku-note);
+  font-size: calc(var(--cell) * 0.24);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.sudoku-notes span {
+  display: grid;
+  place-items: center;
+}
+
+.sudoku-notes .is-same {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+/* Keypad */
+
+.sudoku-pad {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.sudoku-digits {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.sudoku-board.is-wide .sudoku-digits {
+  grid-template-columns: repeat(3, var(--key));
+}
+
+.sudoku-digit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  height: var(--key);
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-solid);
+  color: var(--text);
+  font-size: calc(var(--key) * 0.46);
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 1px 2px rgb(30 36 70 / 0.08);
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease;
+}
+
+.sudoku-digit-left {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.sudoku-digit.is-same {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sudoku-pad.is-notes .sudoku-digit-value {
+  color: var(--accent);
+  font-size: 0.68em;
+  font-weight: 700;
+}
+
+.sudoku-digit:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.sudoku-digit:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.sudoku-tools {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.sudoku-board.is-wide .sudoku-tools {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sudoku-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  height: var(--tool);
+  margin: 0;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.sudoku-tool svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+}
+
+.sudoku-tool.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.sudoku-tool:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .sudoku-digit:hover:not(:disabled),
+  .sudoku-tool:hover:not(:disabled) {
+    border-color: var(--border-strong);
+    background-color: var(--surface-hover);
+  }
+}
+
+@media (max-width: 359px) {
+  .sudoku-tool span {
+    display: none;
+  }
+}
+
+@keyframes sudoku-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes sudoku-pop {
+  from {
+    transform: scale(0.4);
+  }
+}
+
+@keyframes sudoku-shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  25% {
+    translate: -3px 0;
+  }
+  50% {
+    translate: 3px 0;
+  }
+  75% {
+    translate: -2px 0;
+  }
+}
+
+@keyframes sudoku-hint {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes sudoku-flash {
+  30% {
+    background-color: var(--sudoku-flash);
+  }
+}
+
+@keyframes sudoku-wave {
+  0%,
+  100% {
+    transform: none;
+  }
+  40% {
+    background-color: var(--sudoku-flash);
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sudoku-cell.is-hinted::after,
+  .sudoku-cell .sudoku-value,
+  .sudoku-cell.is-flash,
+  .sudoku-grid.is-won .sudoku-cell {
+    animation: none;
+  }
+}

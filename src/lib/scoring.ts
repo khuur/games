@@ -13,6 +13,8 @@ export function starRating(moves: number, minimum: number): StarRating {
 /** A finished game, as the results dialog shows it. */
 export interface WinResult {
   moves: number
+  /** What `moves` counts, when it isn't moves: "Guesses", "Clicks", "Mistakes"… */
+  movesLabel?: string
   timeMs: number
   stars: StarRating
   /** Reached the best possible result, such as the minimum number of moves. */
@@ -25,6 +27,8 @@ export interface WinResult {
   target: { label: string; value: string }
   /** Encouragement when the result could be better. */
   improveNote: string
+  /** Replaces the usual "you used hints" note, for games where other help also counts. */
+  assistNote?: string
 }
 
 export function assistance(solverUsed: boolean, hintsUsed: number): Assistance {
