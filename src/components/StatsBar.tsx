@@ -2,8 +2,8 @@ import type { GameStatus } from '../hooks/useGameSession'
 import { formatTime } from '../lib/format'
 
 interface StatsBarProps {
-  moves: number
-  minimum: number
+  /** The first tile, usually moves against the minimum. */
+  progress: { label: string; value: string; note: string }
   elapsedMs: number
   status: GameStatus
   timerPaused: boolean
@@ -12,14 +12,15 @@ interface StatsBarProps {
   bestNote: string
 }
 
-export function StatsBar({ moves, minimum, elapsedMs, status, timerPaused, bestTimeMs, bestNote }: StatsBarProps) {
+export function StatsBar({ progress, elapsedMs, status, timerPaused, bestTimeMs, bestNote }: StatsBarProps) {
   let timeNote = ''
   if (status === 'ready') timeNote = 'Not started'
+  else if (status === 'stuck') timeNote = 'Stopped'
   else if (status === 'playing' && timerPaused) timeNote = 'Paused'
 
   return (
     <section className="stats" aria-label="Statistics">
-      <Stat label="Moves" value={String(moves)} note={`Minimum ${minimum}`} />
+      <Stat label={progress.label} value={progress.value} note={progress.note} />
       <Stat label="Time" value={formatTime(elapsedMs)} note={timeNote} />
       <Stat
         label="Best"

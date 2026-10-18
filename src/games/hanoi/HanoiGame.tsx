@@ -2,8 +2,10 @@ import { ChevronRight, RotateCcw } from 'lucide-react'
 import { useCallback, useEffect, useEffectEvent, useState } from 'react'
 import { Confetti } from '../../components/Confetti'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { GameControls } from '../../components/GameControls'
 import { SolverControls } from '../../components/SolverControls'
 import { StatsBar } from '../../components/StatsBar'
+import { Stepper } from '../../components/Stepper'
 import { StatusBar, type StatusTone } from '../../components/StatusBar'
 import { WinDialog, type WinAction } from '../../components/WinDialog'
 import { useAutoSolver, type SolverMode } from '../../hooks/useAutoSolver'
@@ -14,9 +16,17 @@ import type { WinResult } from '../../lib/scoring'
 import { sound } from '../../lib/sound'
 import type { GameProps } from '..'
 import { Board, type RejectedMove } from './Board'
-import { Controls } from './Controls'
 import type { GameAction } from './gameState'
-import { MAX_DISKS, minimumMoves, movesToSolve, nextOptimalMove, topDisk, validateMove, type Move } from './hanoi'
+import {
+  MAX_DISKS,
+  MIN_DISKS,
+  minimumMoves,
+  movesToSolve,
+  nextOptimalMove,
+  topDisk,
+  validateMove,
+  type Move,
+} from './hanoi'
 import { useHanoiGame } from './useHanoiGame'
 
 /** Starting over after at least this many moves asks for confirmation first. */
@@ -267,8 +277,7 @@ export function HanoiGame({ paused }: GameProps) {
   return (
     <>
       <StatsBar
-        moves={history.length}
-        minimum={minimumMoves(diskCount)}
+        progress={{ label: 'Moves', value: String(history.length), note: `Minimum ${minimumMoves(diskCount)}` }}
         elapsedMs={elapsedMs}
         status={status}
         timerPaused={solverActive || dialog !== null || paused}
@@ -311,15 +320,27 @@ export function HanoiGame({ paused }: GameProps) {
         />
       </div>
 
-      <Controls
-        diskCount={diskCount}
+      <GameControls
+        level={
+          <Stepper
+            label="Number of disks"
+            value={diskCount}
+            min={MIN_DISKS}
+            max={MAX_DISKS}
+            decreaseLabel="Fewer disks"
+            increaseLabel="More disks"
+            onChange={requestNewGame}
+          >
+            <strong>{diskCount}</strong> disks
+          </Stepper>
+        }
         canUndo={!locked && history.length > 0}
         canRedo={!locked && future.length > 0}
         canRestart={history.length > 0}
         canHint={!locked}
         canSolve={!won}
         solverActive={solverActive}
-        onDiskCountChange={requestNewGame}
+        hintTitle="Show the best next move"
         onUndo={undo}
         onRedo={redo}
         onRestart={() => requestNewGame(diskCount)}
@@ -342,7 +363,7 @@ export function HanoiGame({ paused }: GameProps) {
           result={dialog.result}
           perfectNote={
             <>
-              That&apos;s the shortest possible solution: 2<sup>{diskCount}</sup> − 1 = {dialog.result.minimum} moves.
+              That&apos;s the shortest possible solution: 2<sup>{diskCount}</sup> − 1 = {minimumMoves(diskCount)} moves.
             </>
           }
           actions={winActions(dialog.result)}

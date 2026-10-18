@@ -6,14 +6,6 @@ const GAME_KEY = 'lights-out:game'
 const SIZE_KEY = 'lights-out:size'
 export const RECORDS_KEY = 'lights-out:records'
 
-export interface LightsOutRecord {
-  timeMs: number
-  solved: number
-}
-
-/** Best results per grid size. Puzzles are random, so the best time is what's comparable. */
-export type LightsOutRecords = Partial<Record<number, LightsOutRecord>>
-
 interface StoredGame {
   version: 1
   size: number
@@ -82,15 +74,4 @@ function loadPreferredSize(): number {
 
 export function savePreferredSize(size: number): void {
   writeStored(SIZE_KEY, size)
-}
-
-export function isRecords(value: unknown): value is LightsOutRecords {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false
-  return Object.values(value).every(
-    (record: unknown) =>
-      typeof record === 'object' &&
-      record !== null &&
-      typeof (record as LightsOutRecord).timeMs === 'number' &&
-      isInteger((record as LightsOutRecord).solved),
-  )
 }

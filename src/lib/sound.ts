@@ -99,6 +99,38 @@ class SoundEngine {
     this.note(pitch * 2, { type: 'triangle', decay: 0.07, volume: 0.05 })
   }
 
+  /** A tile sliding in the 15 Puzzle; brighter when it lands where it belongs. */
+  slide(intoPlace: boolean): void {
+    this.note(intoPlace ? scaleNote(9) : scaleNote(4), { type: 'triangle', decay: 0.08, volume: 0.18 })
+    this.note(140, { decay: 0.04, volume: 0.08, glideTo: 90 })
+  }
+
+  /** A peg jumping: a pop as the jumped peg comes off, then the landing, higher as the board clears. */
+  jump(progress: number): void {
+    const pitch = scaleNote(Math.round(Math.min(1, Math.max(0, progress)) * 11))
+    this.note(pitch * 1.5, { delay: 0.04, decay: 0.06, volume: 0.07, glideTo: pitch * 0.7 })
+    this.note(pitch, { type: 'triangle', delay: 0.16, decay: 0.16, volume: 0.22 })
+  }
+
+  /** A light tap, for picking something up or putting it back. */
+  lift(): void {
+    this.note(scaleNote(7), { decay: 0.06, volume: 0.1, glideTo: scaleNote(9) })
+  }
+
+  /**
+   * Water pouring into a tube, rising as it fills (fullness from 0 to 1), timed to the pour
+   * animation; a chime follows when the tube ends up full of one colour.
+   */
+  pour(fullness: number, completes: boolean): void {
+    const pitch = scaleNote(Math.round(Math.min(1, Math.max(0, fullness)) * 9))
+    this.note(pitch * 0.75, { delay: 0.2, attack: 0.03, decay: 0.28, volume: 0.16, glideTo: pitch * 1.3 })
+    this.note(pitch * 1.5, { delay: 0.26, decay: 0.16, volume: 0.06, glideTo: pitch * 2 })
+    if (completes) {
+      this.note(scaleNote(10), { type: 'triangle', delay: 0.55, decay: 0.3, volume: 0.18 })
+      this.note(scaleNote(12), { type: 'triangle', delay: 0.63, decay: 0.4, volume: 0.16 })
+    }
+  }
+
   error(): void {
     this.note(220, { type: 'square', decay: 0.07, volume: 0.045, glideTo: 185 })
     this.note(165, { type: 'square', delay: 0.09, decay: 0.12, volume: 0.045, glideTo: 130 })

@@ -2,8 +2,10 @@ import { ChevronRight, RotateCcw, Shuffle } from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
 import { Confetti } from '../../components/Confetti'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { GameControls } from '../../components/GameControls'
 import { SolverControls } from '../../components/SolverControls'
 import { StatsBar } from '../../components/StatsBar'
+import { Stepper } from '../../components/Stepper'
 import { StatusBar, type StatusTone } from '../../components/StatusBar'
 import { WinDialog, type WinAction } from '../../components/WinDialog'
 import { useAutoSolver, type SolverMode } from '../../hooks/useAutoSolver'
@@ -14,8 +16,7 @@ import { sound } from '../../lib/sound'
 import type { GameProps } from '..'
 import type { LightsOutAction } from './gameState'
 import { LightsBoard } from './LightsBoard'
-import { LightsControls } from './LightsControls'
-import { countLit, MAX_SIZE, press, solve } from './lightsOut'
+import { countLit, MAX_SIZE, MIN_SIZE, press, solve } from './lightsOut'
 import { useLightsOutGame } from './useLightsOutGame'
 
 /** Starting over after at least this many presses asks for confirmation first. */
@@ -210,8 +211,7 @@ export function LightsOutGame({ paused }: GameProps) {
   return (
     <>
       <StatsBar
-        moves={history.length}
-        minimum={minimum}
+        progress={{ label: 'Moves', value: String(history.length), note: `Minimum ${minimum}` }}
         elapsedMs={elapsedMs}
         status={status}
         timerPaused={solverActive || dialog !== null || paused}
@@ -248,16 +248,30 @@ export function LightsOutGame({ paused }: GameProps) {
         />
       </div>
 
-      <LightsControls
-        size={size}
+      <GameControls
+        level={
+          <Stepper
+            label="Grid size"
+            value={size}
+            min={MIN_SIZE}
+            max={MAX_SIZE}
+            decreaseLabel="Smaller grid"
+            increaseLabel="Bigger grid"
+            onChange={(next) => requestStart({ kind: 'new', size: next })}
+          >
+            <strong>
+              {size}×{size}
+            </strong>
+          </Stepper>
+        }
+        onNew={() => requestStart({ kind: 'new', size })}
         canUndo={!locked && history.length > 0}
         canRedo={!locked && future.length > 0}
         canRestart={history.length > 0}
         canHint={!locked}
         canSolve={!won}
         solverActive={solverActive}
-        onSizeChange={(next) => requestStart({ kind: 'new', size: next })}
-        onNewPuzzle={() => requestStart({ kind: 'new', size })}
+        hintTitle="Show a light to press"
         onUndo={undo}
         onRedo={redo}
         onRestart={() => requestStart({ kind: 'restart' })}

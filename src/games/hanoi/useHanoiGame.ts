@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useGameSession } from '../../hooks/useGameSession'
 import { useStoredState } from '../../hooks/useStoredState'
-import { starRating, type WinResult } from '../../lib/scoring'
+import { assistance, starRating, type WinResult } from '../../lib/scoring'
 import { gameReducer, type GameAction, type GameState } from './gameState'
 import { clampDiskCount, minimumMoves } from './hanoi'
 import { isRecords, loadInitialGame, RECORDS_KEY, saveGame, savePreferredDiskCount, type Records } from './persistence'
@@ -41,7 +41,7 @@ export function useHanoiGame({ timerPaused }: { timerPaused: boolean }) {
     const moves = history.length
     const minimum = minimumMoves(diskCount)
     const timeMs = Math.round(stopwatch.read())
-    const assistedBy = solverUsed ? 'solver' : hintsUsed > 0 ? 'hints' : null
+    const assistedBy = assistance(solverUsed, hintsUsed)
     const previous = records[diskCount]
 
     const badges: string[] = []
@@ -64,7 +64,17 @@ export function useHanoiGame({ timerPaused }: { timerPaused: boolean }) {
       }
     }
 
-    return { moves, minimum, timeMs, stars: starRating(moves, minimum), assistedBy, hintsUsed, badges }
+    return {
+      moves,
+      timeMs,
+      stars: starRating(moves, minimum),
+      perfect: moves <= minimum,
+      assistedBy,
+      hintsUsed,
+      badges,
+      target: { label: 'Minimum', value: String(minimum) },
+      improveNote: `The shortest solution takes ${minimum} moves. Can you find it?`,
+    }
   }
 
   return { state, act, elapsedMs: stopwatch.elapsed, records, newGame }

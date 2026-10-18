@@ -14,25 +14,26 @@ export interface WinAction {
 
 interface WinDialogProps {
   result: WinResult
-  /** Shown after a perfect solve, e.g. why that number of moves is the minimum. */
+  /** Title for a perfect result. */
+  perfectTitle?: string
+  /** Shown after a perfect result, e.g. why that number of moves is the minimum. */
   perfectNote: ReactNode
   actions: WinAction[]
   onClose: () => void
 }
 
-export function WinDialog({ result, perfectNote, actions, onClose }: WinDialogProps) {
+export function WinDialog({ result, perfectTitle = 'Perfect solve!', perfectNote, actions, onClose }: WinDialogProps) {
   const titleId = useId()
   const bySolver = result.assistedBy === 'solver'
-  const perfect = result.moves <= result.minimum
 
-  const title = bySolver ? 'Solved by the computer' : perfect ? 'Perfect solve!' : 'Puzzle solved!'
+  const title = bySolver ? 'Solved by the computer' : result.perfect ? perfectTitle : 'Puzzle solved!'
 
   let note: ReactNode
   if (bySolver) note = 'The auto-solver finished this one. Best scores only count when you solve it yourself.'
   else if (result.assistedBy === 'hints')
     note = `You used ${plural(result.hintsUsed, 'hint')}, so this solve doesn't count toward your best scores.`
-  else if (perfect) note = perfectNote
-  else note = `The shortest solution takes ${result.minimum} moves. Can you find it?`
+  else if (result.perfect) note = perfectNote
+  else note = result.improveNote
 
   return (
     <Dialog labelledBy={titleId} onClose={onClose} className="win-dialog">
@@ -49,8 +50,8 @@ export function WinDialog({ result, perfectNote, actions, onClose }: WinDialogPr
           <dd>{result.moves}</dd>
         </div>
         <div>
-          <dt>Minimum</dt>
-          <dd>{result.minimum}</dd>
+          <dt>{result.target.label}</dt>
+          <dd>{result.target.value}</dd>
         </div>
         <div>
           <dt>Time</dt>

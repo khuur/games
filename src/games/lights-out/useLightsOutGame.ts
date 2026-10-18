@@ -1,17 +1,11 @@
 import { useCallback } from 'react'
 import { useGameSession } from '../../hooks/useGameSession'
 import { useStoredState } from '../../hooks/useStoredState'
-import { starRating, type WinResult } from '../../lib/scoring'
+import { addSolve, isSolveRecords, type SolveRecords } from '../../lib/records'
+import { assistance, starRating, type WinResult } from '../../lib/scoring'
 import { lightsOutReducer, type LightsOutAction, type LightsOutState } from './gameState'
 import { clampSize, generatePuzzle } from './lightsOut'
-import {
-  isRecords,
-  loadInitialGame,
-  RECORDS_KEY,
-  saveGame,
-  savePreferredSize,
-  type LightsOutRecords,
-} from './persistence'
+import { loadInitialGame, RECORDS_KEY, saveGame, savePreferredSize } from './persistence'
 
 /** Lights Out state plus everything around it: the clock, saved progress and best records. */
 export function useLightsOutGame({ timerPaused }: { timerPaused: boolean }) {
@@ -21,7 +15,7 @@ export function useLightsOutGame({ timerPaused }: { timerPaused: boolean }) {
     save: saveGame,
     timerPaused,
   })
-  const [records, setRecords] = useStoredState<LightsOutRecords>(RECORDS_KEY, {}, isRecords)
+  const [records, setRecords] = useStoredState<SolveRecords>(RECORDS_KEY, {}, isSolveRecords)
 
   const { reset } = stopwatch
   const newPuzzle = useCallback(
@@ -52,20 +46,27 @@ export function useLightsOutGame({ timerPaused }: { timerPaused: boolean }) {
     const { size, history, minimum, hintsUsed, solverUsed } = game
     const moves = history.length
     const timeMs = Math.round(stopwatch.read())
-    const assistedBy = solverUsed ? 'solver' : hintsUsed > 0 ? 'hints' : null
-    const previous = records[size]
+    const assistedBy = assistance(solverUsed, hintsUsed)
 
     const badges: string[] = []
     if (!assistedBy) {
-      if (!previous) badges.push(`First solve on ${size}×${size}`)
-      else if (timeMs < previous.timeMs) badges.push('New best time')
-      setRecords({
-        ...records,
-        [size]: { timeMs: Math.min(timeMs, previous?.timeMs ?? timeMs), solved: (previous?.solved ?? 0) + 1 },
-      })
+      const solve = addSolve(records, size, timeMs)
+      if (solve.firstSolve) badges.push(`First solve on ${size}×${size}`)
+      else if (solve.newBestTime) badges.push('New best time')
+      setRecords(solve.records)
     }
 
-    return { moves, minimum, timeMs, stars: starRating(moves, minimum), assistedBy, hintsUsed, badges }
+    return {
+      moves,
+      timeMs,
+      stars: starRating(moves, minimum),
+      perfect: moves <= minimum,
+      assistedBy,
+      hintsUsed,
+      badges,
+      target: { label: 'Minimum', value: String(minimum) },
+      improveNote: `This puzzle can be solved in ${minimum} presses. Can you find them?`,
+    }
   }
 
   return { state, act, elapsedMs: stopwatch.elapsed, records, newPuzzle, restart }
