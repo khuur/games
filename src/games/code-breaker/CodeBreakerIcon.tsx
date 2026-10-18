@@ -1,3 +1,5 @@
+import './theme.css'
+
 /** Three coloured pegs and a cluster of marks, like one row of the board. */
 export function CodeBreakerIcon() {
   return (

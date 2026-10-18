@@ -1,6 +1,6 @@
 # Puzzle Games
 
-Eight classic puzzles as React games, each on its own tab:
+Eleven classic puzzles as React games, each on its own tab:
 
 - **Tower of Hanoi:** move the whole tower to the goal peg, one disk at a time, never putting a
   bigger disk on a smaller one.
@@ -13,6 +13,11 @@ Eight classic puzzles as React games, each on its own tab:
 - **Minesweeper:** open every cell that isn't a mine, using the numbers. No board ever needs a
   guess.
 - **Sudoku:** fill the grid so every row, column and box holds 1 to 9.
+- **Nonogram:** fill in cells to reveal a hidden picture, from the runs of filled cells listed for
+  every row and column.
+- **Queens:** place one queen in every row, column and coloured region, with no two touching.
+- **Bridges:** join numbered islands with bridges so each gets exactly its number and all connect
+  (Hashiwokakero).
 
 Built with React 19, TypeScript and Vite. No backend: it is a static site, ready for Netlify.
 
@@ -40,13 +45,17 @@ Every game has:
 | Code Breaker | Easy, Classic, Hard (5 pegs, 8 colours) | A strong next guess and how far it narrows the codes; *par* is the most guesses the computer's strategy needs |
 | Minesweeper | Easy, Medium, Hard, every board solvable without guessing | The next thing the numbers prove, and why; *par* is the board's 3BV (clicks without flags or chords) |
 | Sudoku | Easy, Medium, Hard, graded by technique | The next digit you can be sure of and the technique that finds it; the score is mistakes |
+| Nonogram | Easy 8×8, Medium 10×10, Hard 10×14 | The line that proves the most cells next, and what it proves; the score is mistakes |
+| Queens | Easy 6×6, Medium 8×8, Hard 10×10, graded by technique | The next step and its reason, with the row, column or region it is about marked; the score is mistakes |
+| Bridges | Easy, Medium, Hard, graded by technique | A bridge you can be sure of, and why; the target is the number of bridges in the solution |
 
 Keyboard everywhere: <kbd>Z</kbd> undo, <kbd>Y</kbd> redo, <kbd>H</kbd> hint, <kbd>M</kbd> sound,
 <kbd>?</kbd> help. Each game's help explains its own keys (number keys pick towers, tubes, colours
 and digits; arrow keys move tiles or walk around grids and boards).
 
 Each game has its own address (`/hanoi`, `/lights-out`, `/15-puzzle`, `/peg-solitaire`,
-`/water-sort`, `/code-breaker`, `/minesweeper`, `/sudoku`), and `/` opens the game played last.
+`/water-sort`, `/code-breaker`, `/minesweeper`, `/sudoku`, `/nonogram`, `/queens`, `/bridges`), and `/`
+opens the game played last.
 
 ## Development
 
@@ -90,8 +99,8 @@ src/
   games/
     index.ts     the list of games
     hanoi/  lights-out/  fifteen/  peg-solitaire/  water-sort/
-    code-breaker/  minesweeper/  sudoku/
-                 each game: rules and solver, game state, saving, board and help
+    code-breaker/  minesweeper/  sudoku/  nonogram/  queens/  bridges/
+                 each game: rules and solver, game state, saving, board, help, icon and colours
   components/    shared UI: controls, dialogs, stats, status line, stepper, confetti…
   hooks/         shared behaviour: game session (state, clock, saving), auto-solver, routing…
   lib/           sound effects, storage, scoring, records and formatting
@@ -125,13 +134,30 @@ reducer, which keeps them easy to test. The solvers:
   one solution as clues are removed. A second solver works like a person (singles, then pointing
   pairs, box-line reductions, naked and hidden pairs, naked triples); it grades each puzzle and
   explains hints.
+- **Nonogram:** a line solver finds the cells that every arrangement of a row's (or column's) runs
+  agrees on, by working out where each run can start. Repeating it across the lines until nothing
+  changes solves every puzzle, which also proves its solution is the only one. Pictures are
+  mirrored noise, kept only when this logic solves them.
+- **Queens:** regions grow around a random queen layout, then get reshaped until no other solution
+  is left: each rival solution is broken by handing one of its queens' cells to a neighbouring
+  region. A solver that reasons like a person (a region down to one cell, regions squeezed into
+  rows or columns, alone or in pairs and groups, cells whose queen would leave a region no room)
+  grades puzzles and explains hints.
+- **Bridges:** islands grow out from one, each new island reached by a bridge. A search that narrows
+  each link's possible bridges, checking crossings and connections, counts the solutions; a solver
+  that reasons like a person (what each number allows, crossings, bridges that would cut a group
+  off, and a step of looking ahead) grades puzzles and explains hints.
 
 Tests check the solvers against brute-force searches on small boards.
+
+Each game's code loads when it is first opened, and the rest load quietly in the background, so
+the first download stays small however many games the site has.
 
 ### Adding a game
 
 Create a folder under `src/games/` with a component that takes `GameProps`, a help component and
-an icon, then add an entry to `GAMES` in [`src/games/index.ts`](src/games/index.ts). The tab, its
-address and the help dialog follow from that entry. The shared hooks (`useGameSession`,
+an icon (which imports the game's `theme.css`, so the icon's colours are there before the game
+loads), then add an entry to `GAMES` in [`src/games/index.ts`](src/games/index.ts) with
+`lazyGame(…)`. The tab, its address and the help dialog follow from that entry. The shared hooks (`useGameSession`,
 `useAutoSolver`, `useCelebration`) and components (`GameControls`, `StatsBar`, `WinDialog`…) cover
 the clock, saving, solver loop, controls, results and stats.

@@ -2,7 +2,7 @@
   "name": "games_bleiweis",
   "private": true,
   "version": "1.0.0",
-  "description": "Eight classic puzzle games built with React",
+  "description": "Classic puzzle games built with React",
   "type": "module",
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

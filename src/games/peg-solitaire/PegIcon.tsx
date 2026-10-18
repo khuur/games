@@ -1,3 +1,5 @@
+import './theme.css'
+
 /** A small cross of pegs with the centre hole empty. */
 export function PegIcon() {
   const holes: [number, number][] = []

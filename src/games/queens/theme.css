@@ -1,0 +1,38 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --q-edge: #262b49;
+  --q-line: rgb(30 36 70 / 0.18);
+  --q-0: #ffb9ae;
+  --q-1: #ffd59f;
+  --q-2: #f9ec9a;
+  --q-3: #c6eaa7;
+  --q-4: #a8e3d8;
+  --q-5: #b1d9f7;
+  --q-6: #c3c9ff;
+  --q-7: #dbc2f7;
+  --q-8: #f7c3e1;
+  --q-9: #e6d7c2;
+  --q-crown: #1e2341;
+  --q-cross: rgb(30 36 70 / 0.5);
+  --q-dot: rgb(30 36 70 / 0.3);
+}
+
+:root[data-theme='dark'] {
+  --q-edge: #05070f;
+  --q-line: rgb(0 0 0 / 0.35);
+  --q-0: #94544d;
+  --q-1: #9c6430;
+  --q-2: #998c2c;
+  --q-3: #507a3c;
+  --q-4: #2f7269;
+  --q-5: #36668b;
+  --q-6: #4d5799;
+  --q-7: #6f4f96;
+  --q-8: #8d4c77;
+  --q-9: #6d6150;
+  --q-crown: #fff6d2;
+  --q-cross: rgb(255 255 255 / 0.6);
+  --q-dot: rgb(255 255 255 / 0.35);
+}

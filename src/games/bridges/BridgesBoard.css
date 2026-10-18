@@ -1,0 +1,173 @@
+.bridges-area {
+  position: absolute;
+  inset: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.bridges-board {
+  overflow: visible;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.bridges-dot {
+  fill: var(--br-dot);
+}
+
+/* Where the selected island could build. */
+.bridges-guide {
+  stroke: var(--br-guide);
+  stroke-width: 2;
+  stroke-dasharray: 4 6;
+  stroke-linecap: round;
+}
+
+.bridges-bridge line {
+  stroke: var(--br-bridge);
+  stroke-width: max(3px, calc(var(--cell) * 0.075));
+  stroke-linecap: round;
+  transition: stroke 300ms ease;
+}
+
+.bridges-bridge.is-recent line {
+  stroke-dasharray: 1000;
+  animation: br-draw 320ms ease-out;
+}
+
+.bridges-bridge.is-blocking line {
+  animation: br-flash 700ms ease-in-out;
+}
+
+.bridges-bridge.is-wrong line {
+  stroke: var(--danger);
+  animation: br-pulse 1.1s ease-in-out infinite;
+}
+
+.bridges-hint {
+  stroke: var(--hint);
+  stroke-width: max(4px, calc(var(--cell) * 0.1));
+  stroke-dasharray: 7 7;
+  stroke-linecap: round;
+  pointer-events: none;
+  animation: br-pulse 1.1s ease-in-out infinite;
+}
+
+/* Islands: green when they have their number of bridges, red when they have too many. */
+
+.bridges-island {
+  cursor: pointer;
+  outline: none;
+}
+
+.bridges-board.is-locked .bridges-island {
+  cursor: default;
+}
+
+.bridges-island circle {
+  fill: var(--br-island);
+  stroke: var(--br-island-edge);
+  stroke-width: 2.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    fill 200ms ease,
+    stroke 200ms ease;
+}
+
+.bridges-island text {
+  fill: var(--br-island-text);
+  font-size: calc(var(--cell) * 0.4);
+  font-weight: 900;
+  text-anchor: middle;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.bridges-island.is-done circle {
+  fill: var(--br-done);
+  stroke: var(--br-done-edge);
+}
+
+.bridges-island.is-over circle {
+  fill: var(--br-over);
+  stroke: var(--br-over-edge);
+}
+
+.bridges-island.is-selected circle {
+  stroke: var(--accent);
+  stroke-width: 4;
+}
+
+.bridges-island.is-hint circle {
+  stroke: var(--hint);
+  stroke-width: 4;
+  animation: br-pulse 1.1s ease-in-out infinite;
+}
+
+.bridges-island:focus-visible circle {
+  stroke: var(--focus);
+  stroke-width: 4;
+}
+
+/* Solved: the bridges light up and the islands bounce. */
+.bridges-board.is-won .bridges-bridge line {
+  stroke: var(--accent);
+}
+
+.bridges-board.is-won .bridges-island circle {
+  animation: br-pop 700ms ease-in-out calc(200ms + var(--wave) * 45ms);
+}
+
+@keyframes br-draw {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes br-flash {
+  0%,
+  100% {
+    stroke: var(--br-bridge);
+  }
+  25%,
+  75% {
+    stroke: var(--danger);
+  }
+}
+
+@keyframes br-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes br-pop {
+  0%,
+  100% {
+    transform: none;
+  }
+  40% {
+    transform: scale(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bridges-bridge.is-recent line,
+  .bridges-bridge.is-blocking line,
+  .bridges-bridge.is-wrong line,
+  .bridges-hint,
+  .bridges-island.is-hint circle,
+  .bridges-board.is-won .bridges-island circle {
+    animation: none;
+  }
+}

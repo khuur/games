@@ -1,0 +1,14 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --glass-edge: rgb(30 36 70 / 0.22);
+  --glass-fill: rgb(255 255 255 / 0.55);
+  --glass-shine: rgb(255 255 255 / 0.8);
+}
+
+:root[data-theme='dark'] {
+  --glass-edge: rgb(255 255 255 / 0.28);
+  --glass-fill: rgb(255 255 255 / 0.05);
+  --glass-shine: rgb(255 255 255 / 0.25);
+}

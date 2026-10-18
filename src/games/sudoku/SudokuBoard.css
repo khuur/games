@@ -1,29 +1,3 @@
-:root {
-  --sudoku-line: #3d4469;
-  --sudoku-thin: rgb(30 36 70 / 0.15);
-  --sudoku-cell: #ffffff;
-  --sudoku-peer: rgb(91 85 224 / 0.07);
-  --sudoku-same: rgb(91 85 224 / 0.17);
-  --sudoku-selected: rgb(91 85 224 / 0.28);
-  --sudoku-flash: #d6f3e3;
-  --sudoku-given: #1b2036;
-  --sudoku-entry: #4a43d3;
-  --sudoku-note: #6b7290;
-}
-
-:root[data-theme='dark'] {
-  --sudoku-line: #575e8c;
-  --sudoku-thin: rgb(255 255 255 / 0.1);
-  --sudoku-cell: #151a33;
-  --sudoku-peer: rgb(141 136 255 / 0.08);
-  --sudoku-same: rgb(141 136 255 / 0.19);
-  --sudoku-selected: rgb(141 136 255 / 0.32);
-  --sudoku-flash: #1d4a3a;
-  --sudoku-given: #eceefa;
-  --sudoku-entry: #a9a5ff;
-  --sudoku-note: #9ba1bf;
-}
-
 .sudoku-board {
   position: absolute;
   inset: 0;

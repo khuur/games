@@ -1,7 +1,8 @@
 import { CircleHelp, Moon, Sun, Volume2, VolumeX } from 'lucide-react'
-import { useEffect, useEffectEvent, useState } from 'react'
+import { Suspense, useEffect, useEffectEvent, useState } from 'react'
 import { GameTabs } from './components/GameTabs'
 import { HelpDialog } from './components/HelpDialog'
+import { LoadError } from './components/LoadError'
 import { SiteLogo } from './components/SiteLogo'
 import { GAMES } from './games'
 import { navigate, usePathname } from './hooks/usePathname'
@@ -41,6 +42,18 @@ export default function App() {
   useEffect(() => {
     sound.enabled = soundOn
   }, [soundOn])
+
+  // Each game's code arrives when it is first opened. Once the page has settled, fetch the rest
+  // too, so switching games never has to wait.
+  useEffect(() => {
+    const preloadAll = () => GAMES.forEach((game) => void game.preload().catch(() => {}))
+    if ('requestIdleCallback' in window) {
+      const idle = window.requestIdleCallback(preloadAll, { timeout: 4000 })
+      return () => window.cancelIdleCallback(idle)
+    }
+    const timer = setTimeout(preloadAll, 2000)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     const unlockAudio = (event: Event) => {
@@ -121,12 +134,20 @@ export default function App() {
       </header>
 
       <main className="game" aria-label={game.title}>
-        <Game key={game.id} paused={helpOpen} />
+        <LoadError key={game.id}>
+          <Suspense fallback={<div className="game-loading" aria-busy="true" />}>
+            <Game paused={helpOpen} />
+          </Suspense>
+        </LoadError>
       </main>
 
       {helpOpen && (
         <HelpDialog title={`How to play ${game.title}`} onClose={() => setHelpFor(null)}>
-          <Help />
+          <LoadError>
+            <Suspense fallback={<p className="help-lead">Loading…</p>}>
+              <Help />
+            </Suspense>
+          </LoadError>
         </HelpDialog>
       )}
     </div>

@@ -1,3 +1,5 @@
+import './theme.css'
+
 const LIT = new Set([1, 3, 4, 5, 7])
 
 /** A 3×3 grid with the plus shape a single press flips. */

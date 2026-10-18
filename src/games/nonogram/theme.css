@@ -1,0 +1,24 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --nono-cell: #ffffff;
+  --nono-line: rgb(30 36 70 / 0.13);
+  --nono-five: rgb(30 36 70 / 0.5);
+  --nono-fill: #2b3154;
+  --nono-cross: rgb(30 36 70 / 0.35);
+  --nono-clue: #2b3154;
+  --nono-clue-done: rgb(30 36 70 / 0.25);
+  --nono-cursor: rgb(91 85 224 / 0.08);
+}
+
+:root[data-theme='dark'] {
+  --nono-cell: #161b34;
+  --nono-line: rgb(255 255 255 / 0.08);
+  --nono-five: rgb(255 255 255 / 0.34);
+  --nono-fill: #d3d6f6;
+  --nono-cross: rgb(255 255 255 / 0.32);
+  --nono-clue: #e3e5f8;
+  --nono-clue-done: rgb(255 255 255 / 0.24);
+  --nono-cursor: rgb(141 136 255 / 0.12);
+}

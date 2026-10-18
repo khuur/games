@@ -57,7 +57,7 @@
    don't all fit (on phones), the strip scrolls sideways and fades at the edge with more to show. */
 
 .game-tabs {
-  --tab-min: 82px;
+  --tab-min: 88px;
   grid-area: tabs;
   overflow-x: auto;
   overscroll-behavior-x: contain;
@@ -151,28 +151,27 @@
   text-overflow: ellipsis;
 }
 
-/* Full names where every tab has room for one, short names elsewhere. */
+/* Full names where every tab has room for one (GameTabs measures), short names elsewhere. */
 .game-tab-label {
   display: none;
 }
 
-.game-tab-label.short {
+.game-tab-label.short,
+.game-tabs.is-roomy .game-tab-label {
   display: inline;
 }
 
-@media (min-width: 1000px) {
-  .game-tab-label {
-    display: inline;
-  }
-
-  .game-tab-label.short {
-    display: none;
-  }
+.game-tabs.is-roomy .game-tab-label.short {
+  display: none;
 }
 
 @media (max-width: 760px) {
   .app-header {
     gap: 10px 12px;
+  }
+
+  .game-tabs {
+    --tab-min: 82px;
   }
 
   .game-tab {
@@ -207,6 +206,24 @@
   flex-direction: column;
   gap: 12px;
   min-height: 0;
+}
+
+/* Holds the game's place while its code arrives (only ever on the first visit). */
+.game-loading {
+  flex: 1 1 auto;
+  min-height: 300px;
+}
+
+.load-error {
+  display: grid;
+  flex: 1 1 auto;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  min-height: 300px;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-align: center;
 }
 
 .stats {

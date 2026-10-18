@@ -1,3 +1,5 @@
+import './theme.css'
+
 /** A small grid with a few digits, the middle one picked out. */
 export function SudokuIcon() {
   return (

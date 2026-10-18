@@ -1,0 +1,16 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --plate-light: #ecd3a6;
+  --plate-dark: #cfa66c;
+  --pit: #8a6232;
+  --pit-shadow: rgb(70 40 10 / 0.55);
+}
+
+:root[data-theme='dark'] {
+  --plate-light: #5b4330;
+  --plate-dark: #3f2d20;
+  --pit: #24180f;
+  --pit-shadow: rgb(0 0 0 / 0.7);
+}

@@ -1,0 +1,28 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --br-island: #ffffff;
+  --br-island-edge: #2d3356;
+  --br-island-text: #1b2036;
+  --br-done: #d6f2e3;
+  --br-done-edge: #12844f;
+  --br-over: #fde0e2;
+  --br-over-edge: #d1343f;
+  --br-bridge: #3a4170;
+  --br-dot: rgb(30 36 70 / 0.16);
+  --br-guide: rgb(91 85 224 / 0.5);
+}
+
+:root[data-theme='dark'] {
+  --br-island: #1b2142;
+  --br-island-edge: #9aa0d8;
+  --br-island-text: #eceefa;
+  --br-done: #153a2c;
+  --br-done-edge: #3dd68c;
+  --br-over: #3d1a20;
+  --br-over-edge: #ff6b73;
+  --br-bridge: #c9cdf3;
+  --br-dot: rgb(255 255 255 / 0.13);
+  --br-guide: rgb(141 136 255 / 0.6);
+}

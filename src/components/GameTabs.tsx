@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import type { GameInfo } from '../games'
 
 interface GameTabsProps {
@@ -9,13 +9,18 @@ interface GameTabsProps {
 
 type Overflow = 'none' | 'left' | 'right' | 'both'
 
+/** Tabs at least this wide have room for a game's full name. */
+const ROOMY_TAB = 108
+
 /**
- * Switches between games. Real links, so each game has its own address. When the tabs don't all
- * fit, the strip scrolls sideways and fades at the edge that has more to show.
+ * Switches between games. Real links, so each game has its own address. Full names show when
+ * every tab has room for one, short names otherwise. When the tabs don't all fit, the strip
+ * scrolls sideways and fades at the edge that has more to show.
  */
 export function GameTabs({ games, currentId, onSelect }: GameTabsProps) {
   const navRef = useRef<HTMLElement>(null)
   const [overflow, setOverflow] = useState<Overflow>('none')
+  const [roomy, setRoomy] = useState(false)
   const activeIndex = games.findIndex((game) => game.id === currentId)
 
   const measure = () => {
@@ -24,12 +29,17 @@ export function GameTabs({ games, currentId, onSelect }: GameTabsProps) {
     const left = nav.scrollLeft > 1
     const right = nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 1
     setOverflow(left && right ? 'both' : left ? 'left' : right ? 'right' : 'none')
+    setRoomy(nav.clientWidth / games.length >= ROOMY_TAB)
   }
 
-  useEffect(() => {
+  const remeasure = useEffectEvent(measure)
+
+  // Measured before the first paint, so the labels never visibly switch on load.
+  useLayoutEffect(() => {
     const nav = navRef.current
     if (!nav) return
-    const observer = new ResizeObserver(() => measure())
+    remeasure()
+    const observer = new ResizeObserver(() => remeasure())
     observer.observe(nav)
     return () => observer.disconnect()
   }, [])
@@ -51,7 +61,13 @@ export function GameTabs({ games, currentId, onSelect }: GameTabsProps) {
   }
 
   return (
-    <nav ref={navRef} className="game-tabs" aria-label="Games" data-overflow={overflow} onScroll={measure}>
+    <nav
+      ref={navRef}
+      className={`game-tabs${roomy ? ' is-roomy' : ''}`}
+      aria-label="Games"
+      data-overflow={overflow}
+      onScroll={measure}
+    >
       <div className="game-tabs-track" style={{ '--tab-count': games.length, '--active-tab': activeIndex } as CSSProperties}>
         <span className="game-tabs-indicator" aria-hidden="true" />
         {games.map((game) => (

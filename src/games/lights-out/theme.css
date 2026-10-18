@@ -1,0 +1,20 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --light-off-top: #e3e6f1;
+  --light-off-bottom: #d2d7e7;
+  --light-off-shine: rgb(255 255 255 / 0.85);
+  --light-off-edge: rgb(30 36 70 / 0.13);
+  --light-halo: rgb(255 168 36 / 0.42);
+  --light-preview: rgb(91 85 224 / 0.45);
+}
+
+:root[data-theme='dark'] {
+  --light-off-top: #282d51;
+  --light-off-bottom: #1c2041;
+  --light-off-shine: rgb(255 255 255 / 0.07);
+  --light-off-edge: rgb(0 0 0 / 0.35);
+  --light-halo: rgb(255 180 50 / 0.5);
+  --light-preview: rgb(141 136 255 / 0.55);
+}

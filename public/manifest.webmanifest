@@ -1,7 +1,7 @@
 {
   "name": "Puzzle Games",
   "short_name": "Puzzles",
-  "description": "Eight classic puzzles with hints and auto-solvers: Tower of Hanoi, Lights Out, 15 Puzzle, Peg Solitaire, Water Sort, Code Breaker, Minesweeper and Sudoku.",
+  "description": "Eleven classic puzzles with hints and auto-solvers: Tower of Hanoi, Lights Out, 15 Puzzle, Peg Solitaire, Water Sort, Code Breaker, Minesweeper, Sudoku, Nonogram, Queens and Bridges.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

@@ -1,3 +1,5 @@
+import './theme.css'
+
 const TUBES = [
   ['#3d6df0', '#e5484d', '#f4d13b'],
   ['#e5484d', '#3fbf5a', '#3d6df0'],

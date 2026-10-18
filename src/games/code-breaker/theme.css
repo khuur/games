@@ -1,0 +1,18 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --code-hole: rgb(30 36 70 / 0.08);
+  --code-hole-edge: rgb(30 36 70 / 0.16);
+  --code-row-current: rgb(91 85 224 / 0.08);
+  --code-mark: #232846;
+  --code-mark-near: #ffffff;
+}
+
+:root[data-theme='dark'] {
+  --code-hole: rgb(0 0 0 / 0.32);
+  --code-hole-edge: rgb(255 255 255 / 0.14);
+  --code-row-current: rgb(141 136 255 / 0.1);
+  --code-mark: #eef0ff;
+  --code-mark-near: transparent;
+}

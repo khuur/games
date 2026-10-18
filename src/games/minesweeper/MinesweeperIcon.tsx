@@ -1,3 +1,5 @@
+import './theme.css'
+
 /** A mine, with a red flag planted beside it. */
 export function MinesweeperIcon() {
   return (
