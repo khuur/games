@@ -9,6 +9,6 @@ export function formatTime(ms: number, withTenths = false): string {
   return withTenths ? `${time}.${Math.floor((clamped % 1000) / 100)}` : time
 }
 
-export function plural(count: number, word: string): string {
-  return `${count} ${word}${count === 1 ? '' : 's'}`
+export function plural(count: number, word: string, pluralWord = `${word}s`): string {
+  return `${count} ${count === 1 ? word : pluralWord}`
 }

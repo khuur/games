@@ -1,7 +1,7 @@
 /**
- * Tiny synthesized sound effects, so the game ships without audio files.
- * Each disk size maps to a note of the pentatonic scale, which makes any sequence of moves
- * (including the auto-solver at full speed) sound like a little melody.
+ * Tiny synthesized sound effects, so the games ship without audio files.
+ * Moves play notes of the pentatonic scale, which makes any sequence of them (including an
+ * auto-solver at full speed) sound like a little melody.
  */
 
 interface NoteOptions {
@@ -19,11 +19,15 @@ interface NoteOptions {
 const PENTATONIC = [0, 2, 4, 7, 9]
 const LOWEST_NOTE = 261.63 // C4: small speakers struggle below this.
 
-/** The largest disk plays the lowest note. */
-function pitchFor(size: number, diskCount: number): number {
-  const step = Math.max(0, diskCount - size)
+/** The frequency of a step up the pentatonic scale from the lowest note. */
+function scaleNote(step: number): number {
   const semitones = 12 * Math.floor(step / PENTATONIC.length) + PENTATONIC[step % PENTATONIC.length]
   return LOWEST_NOTE * 2 ** (semitones / 12)
+}
+
+/** The largest disk plays the lowest note. */
+function pitchFor(size: number, diskCount: number): number {
+  return scaleNote(Math.max(0, diskCount - size))
 }
 
 type AudioWindow = Window & { webkitAudioContext?: typeof AudioContext }
@@ -86,6 +90,13 @@ class SoundEngine {
     const pitch = pitchFor(size, diskCount)
     this.note(pitch, { type: 'triangle', decay: 0.3, volume: 0.3 })
     this.note(pitch * 2, { decay: 0.12, volume: 0.08 })
+  }
+
+  /** A press in Lights Out; the note climbs as the board gets darker (progress from 0 to 1). */
+  light(progress: number): void {
+    const pitch = scaleNote(Math.round(Math.min(1, Math.max(0, progress)) * 9))
+    this.note(pitch, { decay: 0.2, volume: 0.22 })
+    this.note(pitch * 2, { type: 'triangle', decay: 0.07, volume: 0.05 })
   }
 
   error(): void {

@@ -1,7 +1,7 @@
 {
-  "name": "Tower of Hanoi",
-  "short_name": "Hanoi",
-  "description": "The classic disk-stacking puzzle.",
+  "name": "Puzzle Games",
+  "short_name": "Puzzles",
+  "description": "Tower of Hanoi and Lights Out: classic puzzles with hints, undo and auto-solvers.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

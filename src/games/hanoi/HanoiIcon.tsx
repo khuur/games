@@ -1,6 +1,6 @@
-export function Logo() {
+export function HanoiIcon() {
   return (
-    <svg className="logo" viewBox="0 0 48 48" width="38" height="38" aria-hidden="true">
+    <svg className="game-icon" viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
       <rect x="21.5" y="6" width="5" height="36" rx="2.5" fill="var(--peg-mid)" />
       <rect x="14" y="13" width="20" height="8" rx="3.5" fill="#f0606b" />
       <rect x="9" y="22" width="30" height="8" rx="3.5" fill="#2fbf9b" />

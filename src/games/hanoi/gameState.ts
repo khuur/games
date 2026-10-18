@@ -1,3 +1,4 @@
+import type { GameStatus } from '../../hooks/useGameSession'
 import {
   applyMove,
   clampDiskCount,
@@ -9,8 +10,6 @@ import {
   type Move,
   type Towers,
 } from './hanoi'
-
-export type GameStatus = 'ready' | 'playing' | 'won'
 
 export interface GameState {
   /** Changes whenever a fresh game starts, so the board can reset itself. */

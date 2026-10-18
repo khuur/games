@@ -1,44 +1,38 @@
-import { Bot, ChevronRight, RotateCcw, Sparkles, Star, Trophy } from 'lucide-react'
+import { Bot, Sparkles, Star, Trophy } from 'lucide-react'
 import { useId, type CSSProperties, type ReactNode } from 'react'
-import type { WinResult } from '../game/useHanoiGame'
 import { formatTime, plural } from '../lib/format'
+import type { WinResult } from '../lib/scoring'
 import { Dialog, DialogCloseButton } from './Dialog'
+
+export interface WinAction {
+  label: string
+  icon?: ReactNode
+  trailingIcon?: ReactNode
+  primary?: boolean
+  onClick: () => void
+}
 
 interface WinDialogProps {
   result: WinResult
+  /** Shown after a perfect solve, e.g. why that number of moves is the minimum. */
+  perfectNote: ReactNode
+  actions: WinAction[]
   onClose: () => void
-  onPlayAgain: () => void
-  /** Absent when there is no bigger puzzle to move on to. */
-  onNextLevel?: () => void
 }
 
-export function WinDialog({ result, onClose, onPlayAgain, onNextLevel }: WinDialogProps) {
+export function WinDialog({ result, perfectNote, actions, onClose }: WinDialogProps) {
   const titleId = useId()
   const bySolver = result.assistedBy === 'solver'
   const perfect = result.moves <= result.minimum
 
   const title = bySolver ? 'Solved by the computer' : perfect ? 'Perfect solve!' : 'Puzzle solved!'
 
-  const badges: string[] = []
-  if (result.firstSolve) badges.push(`First solve with ${result.diskCount} disks`)
-  else {
-    if (result.newBestTime) badges.push('New best time')
-    if (result.newBestMoves) badges.push('New fewest moves')
-  }
-
   let note: ReactNode
   if (bySolver) note = 'The auto-solver finished this one. Best scores only count when you solve it yourself.'
   else if (result.assistedBy === 'hints')
     note = `You used ${plural(result.hintsUsed, 'hint')}, so this solve doesn't count toward your best scores.`
-  else if (perfect)
-    note = (
-      <>
-        That&apos;s the shortest possible solution: 2<sup>{result.diskCount}</sup> − 1 = {result.minimum} moves.
-      </>
-    )
+  else if (perfect) note = perfectNote
   else note = `The shortest solution takes ${result.minimum} moves. Can you find it?`
-
-  const showNext = Boolean(onNextLevel) && !bySolver
 
   return (
     <Dialog labelledBy={titleId} onClose={onClose} className="win-dialog">
@@ -64,9 +58,9 @@ export function WinDialog({ result, onClose, onPlayAgain, onNextLevel }: WinDial
         </div>
       </dl>
 
-      {badges.length > 0 && (
+      {!bySolver && result.badges.length > 0 && (
         <ul className="win-badges">
-          {badges.map((badge) => (
+          {result.badges.map((badge) => (
             <li key={badge}>
               <Sparkles aria-hidden="true" /> {badge}
             </li>
@@ -77,19 +71,19 @@ export function WinDialog({ result, onClose, onPlayAgain, onNextLevel }: WinDial
       <p className="win-note">{note}</p>
 
       <div className="dialog-actions">
-        <button
-          type="button"
-          className={`button${showNext ? '' : ' button-primary'}`}
-          onClick={onPlayAgain}
-          data-autofocus={showNext ? undefined : true}
-        >
-          <RotateCcw aria-hidden="true" /> {bySolver ? 'Try it yourself' : 'Play again'}
-        </button>
-        {showNext && (
-          <button type="button" className="button button-primary" onClick={onNextLevel} data-autofocus>
-            Next: {result.diskCount + 1} disks <ChevronRight aria-hidden="true" />
+        {actions.map((action) => (
+          <button
+            key={action.label}
+            type="button"
+            className={`button${action.primary ? ' button-primary' : ''}`}
+            onClick={action.onClick}
+            data-autofocus={action.primary || undefined}
+          >
+            {action.icon}
+            {action.label}
+            {action.trailingIcon}
           </button>
-        )}
+        ))}
       </div>
     </Dialog>
   )

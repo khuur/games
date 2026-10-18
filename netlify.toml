@@ -7,6 +7,13 @@
 [build.environment]
   NODE_VERSION = "24"
 
+# Each game has its own address (/hanoi, /lights-out) that the app itself handles, so any path
+# without a matching file serves index.html. Real files such as /assets/* still win.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
 # Vite puts content hashes in every file name under /assets, so they can be cached forever.
 [[headers]]
   for = "/assets/*"

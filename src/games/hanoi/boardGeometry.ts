@@ -1,4 +1,4 @@
-import { TOWER_COUNT } from '../game/hanoi'
+import { TOWER_COUNT } from './hanoi'
 
 export interface Point {
   x: number

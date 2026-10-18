@@ -1,15 +1,17 @@
-import { Lightbulb, Minus, Play, Plus, Redo2, RotateCcw, Square, Undo2 } from 'lucide-react'
-import { MAX_DISKS, MIN_DISKS } from '../game/hanoi'
+import { Lightbulb, Play, Redo2, RotateCcw, Shuffle, Square, Undo2 } from 'lucide-react'
+import { Stepper } from '../../components/Stepper'
+import { MAX_SIZE, MIN_SIZE } from './lightsOut'
 
-interface ControlsProps {
-  diskCount: number
+interface LightsControlsProps {
+  size: number
   canUndo: boolean
   canRedo: boolean
   canRestart: boolean
   canHint: boolean
   canSolve: boolean
   solverActive: boolean
-  onDiskCountChange: (diskCount: number) => void
+  onSizeChange: (size: number) => void
+  onNewPuzzle: () => void
   onUndo: () => void
   onRedo: () => void
   onRestart: () => void
@@ -17,46 +19,41 @@ interface ControlsProps {
   onToggleSolver: () => void
 }
 
-export function Controls({
-  diskCount,
+export function LightsControls({
+  size,
   canUndo,
   canRedo,
   canRestart,
   canHint,
   canSolve,
   solverActive,
-  onDiskCountChange,
+  onSizeChange,
+  onNewPuzzle,
   onUndo,
   onRedo,
   onRestart,
   onHint,
   onToggleSolver,
-}: ControlsProps) {
+}: LightsControlsProps) {
   return (
     <section className="controls" aria-label="Game controls">
-      <div className="stepper" role="group" aria-label="Number of disks">
-        <button
-          type="button"
-          className="button stepper-button"
-          onClick={() => onDiskCountChange(diskCount - 1)}
-          disabled={diskCount <= MIN_DISKS}
-          aria-label="Fewer disks"
-          title="Fewer disks"
+      <div className="control-group">
+        <Stepper
+          label="Grid size"
+          value={size}
+          min={MIN_SIZE}
+          max={MAX_SIZE}
+          decreaseLabel="Smaller grid"
+          increaseLabel="Bigger grid"
+          onChange={onSizeChange}
         >
-          <Minus aria-hidden="true" />
-        </button>
-        <span className="stepper-value">
-          <strong>{diskCount}</strong> disks
-        </span>
-        <button
-          type="button"
-          className="button stepper-button"
-          onClick={() => onDiskCountChange(diskCount + 1)}
-          disabled={diskCount >= MAX_DISKS}
-          aria-label="More disks"
-          title="More disks"
-        >
-          <Plus aria-hidden="true" />
+          <strong>
+            {size}×{size}
+          </strong>
+        </Stepper>
+        <button type="button" className="button" onClick={onNewPuzzle} aria-label="New puzzle" title="New puzzle">
+          <Shuffle aria-hidden="true" />
+          <span className="button-label">New</span>
         </button>
       </div>
 
@@ -75,7 +72,7 @@ export function Controls({
           onClick={onRestart}
           disabled={!canRestart}
           aria-label="Restart"
-          title="Restart"
+          title="Restart this puzzle"
         >
           <RotateCcw aria-hidden="true" />
           <span className="button-label collapsible">Restart</span>
@@ -83,7 +80,7 @@ export function Controls({
       </div>
 
       <div className="control-group">
-        <button type="button" className="button" onClick={onHint} disabled={!canHint} title="Show the best next move (H)">
+        <button type="button" className="button" onClick={onHint} disabled={!canHint} title="Show a light to press (H)">
           <Lightbulb aria-hidden="true" />
           <span className="button-label">Hint</span>
         </button>

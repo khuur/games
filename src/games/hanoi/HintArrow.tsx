@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import type { Move } from '../game/hanoi'
+import type { Move } from './hanoi'
 import type { BoardGeometry } from './boardGeometry'
 
 /** A dashed arc from one peg to another, drawn above the pegs. */

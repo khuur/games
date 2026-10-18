@@ -28,4 +28,9 @@ describe('plural', () => {
     expect(plural(0, 'move')).toBe('0 moves')
     expect(plural(7, 'hint')).toBe('7 hints')
   })
+
+  it('accepts an irregular plural', () => {
+    expect(plural(2, 'press', 'presses')).toBe('2 presses')
+    expect(plural(1, 'press', 'presses')).toBe('1 press')
+  })
 })

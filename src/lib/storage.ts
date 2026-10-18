@@ -1,4 +1,5 @@
-const PREFIX = 'hanoi:'
+/** Keep in sync with the inline theme script in index.html. */
+const PREFIX = 'puzzles:'
 
 /** Reads a JSON value from localStorage, falling back when it is missing, invalid or blocked. */
 export function readStored<T>(key: string, fallback: T, isValid: (value: unknown) => value is T): T {

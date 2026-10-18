@@ -1,10 +1,10 @@
-import { isInteger, readStored, removeStored, writeStored } from '../lib/storage'
+import { isInteger, readStored, removeStored, writeStored } from '../../lib/storage'
 import { createGame, restoreGame, toSnapshot, type GameState } from './gameState'
 import { clampDiskCount, DEFAULT_DISKS, type Move } from './hanoi'
 
-const GAME_KEY = 'game'
-const DISKS_KEY = 'disks'
-export const RECORDS_KEY = 'records'
+const GAME_KEY = 'hanoi:game'
+const DISKS_KEY = 'hanoi:disks'
+export const RECORDS_KEY = 'hanoi:records'
 
 export interface BestRecord {
   moves: number

@@ -11,7 +11,6 @@ import {
   movesToSolve,
   nextOptimalMove,
   solve,
-  starRating,
   validateMove,
   type Towers,
 } from './hanoi'
@@ -134,14 +133,5 @@ describe('solver', () => {
     expect(solve(towers, 1)).toHaveLength(7)
     expect(solve(towers, 0)).toHaveLength(0)
     expect(nextOptimalMove(towers, 0)).toBeNull()
-  })
-})
-
-describe('star rating', () => {
-  it('gives three stars only for a perfect solution', () => {
-    expect(starRating(7, 3)).toBe(3)
-    expect(starRating(8, 3)).toBe(2)
-    expect(starRating(11, 3)).toBe(2)
-    expect(starRating(12, 3)).toBe(1)
   })
 })

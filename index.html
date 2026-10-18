@@ -3,28 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Tower of Hanoi – Puzzle Game</title>
+    <title>Puzzle Games</title>
     <meta
       name="description"
-      content="Play the classic Tower of Hanoi puzzle in your browser. Move the tower one disk at a time and never put a bigger disk on a smaller one. 3 to 10 disks, hints, undo and an auto-solver."
+      content="Classic puzzle games in your browser: Tower of Hanoi and Lights Out. Hints, undo, auto-solvers and best scores, on desktop and mobile."
     />
     <meta name="theme-color" content="#eef0f8" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Tower of Hanoi" />
+    <meta property="og:title" content="Puzzle Games" />
     <meta
       property="og:description"
-      content="The classic disk-stacking puzzle: drag, tap or use the keyboard to move the tower to the goal peg."
+      content="Tower of Hanoi and Lights Out: classic puzzles with hints, undo and auto-solvers."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <script>
       // Apply the theme before the first paint so the page never flashes the wrong colours.
-      // Keep the storage key and colours in sync with src/hooks/useTheme.ts.
+      // Keep the storage key in sync with src/lib/storage.ts and the colours with src/hooks/useTheme.ts.
       ;(function () {
         var theme
         try {
-          theme = JSON.parse(localStorage.getItem('hanoi:theme'))
+          theme = JSON.parse(localStorage.getItem('puzzles:theme'))
         } catch (error) {}
         if (theme !== 'light' && theme !== 'dark') {
           theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'

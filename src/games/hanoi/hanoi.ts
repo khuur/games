@@ -131,12 +131,3 @@ export function movesToSolve(towers: Towers, goal = GOAL_TOWER): number {
   }
   return count
 }
-
-export type StarRating = 1 | 2 | 3
-
-export function starRating(moves: number, diskCount: number): StarRating {
-  const minimum = minimumMoves(diskCount)
-  if (moves <= minimum) return 3
-  if (moves <= Math.ceil(minimum * 1.5)) return 2
-  return 1
-}

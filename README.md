@@ -1,32 +1,36 @@
-# Tower of Hanoi
+# Puzzle Games
 
-The classic disk-stacking puzzle as a React game. Move the whole tower to the goal peg, one disk
-at a time, without ever putting a bigger disk on a smaller one.
+Classic puzzles as React games, each on its own tab:
+
+- **Tower of Hanoi:** move the whole tower to the goal peg, one disk at a time, without ever putting
+  a bigger disk on a smaller one.
+- **Lights Out:** pressing a light flips it and its four neighbours. Switch every light off.
 
 Built with React 19, TypeScript and Vite. No backend: it is a static site, ready for Netlify.
 
 ## Features
 
-- **3 to 10 disks**, with a move counter, the minimum to aim for, a timer and best scores per disk count
-- **Play your way:** tap or click a tower and then its destination, drag and drop with mouse or
-  finger, or use the keyboard
-- **Undo and redo**, a **hint** button that shows the best next move from any position, and an
-  **auto-solver** with adjustable speed (solves made with help don't count as best scores)
-- Smooth animations, synthesized sound effects (every disk plays its own note), confetti and star ratings
-- Light and dark themes, reduced-motion support and screen-reader announcements
-- Progress is kept in the browser, so a reload never loses your game
+Both games have:
 
-### Keyboard
+- A move counter with the minimum to aim for, a timer, star ratings and best scores per level
+- Undo and redo, a **hint** that shows the best next move from any position, and an **auto-solver**
+  with adjustable speed (solves made with help don't count as best scores)
+- Mouse, touch and full keyboard control
+- Animations, synthesized sound effects, confetti, light and dark themes, reduced-motion support
+  and screen-reader announcements
+- Progress kept in the browser, so switching games or reloading never loses your place
 
-| Key | Action |
-| --- | --- |
-| <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> | Pick up from / place on that tower |
-| <kbd>←</kbd> <kbd>→</kbd>, <kbd>Enter</kbd> | Move between towers and activate the focused one |
-| <kbd>Esc</kbd> | Put the picked-up disk back |
-| <kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Z</kbd> | Undo |
-| <kbd>Y</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> | Redo |
-| <kbd>H</kbd> | Hint |
-| <kbd>M</kbd> | Sound on/off |
+Per game:
+
+| | Tower of Hanoi | Lights Out |
+| --- | --- | --- |
+| Levels | 3 to 10 disks | 3×3 to 7×7 grids, a new random puzzle each time |
+| Play | Tap a tower then its destination, or drag and drop | Tap a light; hover to preview what it flips |
+| Keyboard | <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> pick up / place, <kbd>Esc</kbd> put back | Arrow keys move, <kbd>Enter</kbd> presses |
+
+Everywhere: <kbd>Z</kbd> undo, <kbd>Y</kbd> redo, <kbd>H</kbd> hint, <kbd>M</kbd> sound, <kbd>?</kbd> help.
+
+Each game has its own address (`/hanoi`, `/lights-out`), and `/` opens the game played last.
 
 ## Development
 
@@ -48,12 +52,11 @@ npm run dev
 ## Deploying to Netlify
 
 [`netlify.toml`](netlify.toml) already holds the build settings (build command, `dist` as the
-publish folder, Node version and cache headers), so there is nothing to configure in the
-Netlify UI. Pick one of these:
+publish folder, Node version, cache headers, and the rule that lets each game's address load
+directly), so there is nothing to configure in the Netlify UI. Pick one of these:
 
-1. **From Git (recommended):** push this repository to GitHub, GitLab or Bitbucket. In Netlify,
-   choose **Add new site → Import an existing project** and select the repository. Every push to
-   `main` then deploys automatically.
+1. **From Git (recommended):** in Netlify, choose **Add new site → Import an existing project** and
+   select this repository. Every push to `main` then deploys automatically.
 2. **With the Netlify CLI:**
    ```bash
    npm run build
@@ -67,18 +70,33 @@ Netlify UI. Pick one of these:
 
 ```
 src/
-  game/        rules, solver, game state and persistence
-  components/  board, disks, dialogs and controls
-  hooks/       small reusable hooks (stopwatch, theme, element size…)
-  lib/         sound effects, storage and formatting helpers
+  App.tsx        the site: header, game tabs, sound and theme, help
+  games/
+    index.ts     the list of games
+    hanoi/       Tower of Hanoi: rules, solver, state, board and controls
+    lights-out/  Lights Out: the same pieces
+  components/    shared UI: dialogs, stats, status line, stepper, confetti…
+  hooks/         shared behaviour: game session (state, clock, saving), auto-solver, routing…
+  lib/           sound effects, storage, scoring and formatting
 ```
 
-The rules live in plain TypeScript with no React (`src/game/hanoi.ts` and `src/game/gameState.ts`),
-which keeps them easy to test. The hint and the auto-solver use the optimal strategy from **any**
-position, not just from the start: the largest disk that is not yet on the goal has to move there
-exactly once, so every smaller disk first goes to the spare peg, and the same reasoning repeats
-one disk smaller. A test checks this against a brute-force search over every legal position.
+Each game's rules live in plain TypeScript with no React (`hanoi.ts`, `lightsOut.ts`, and the
+`gameState.ts` next to each), which keeps them easy to test. Both hints and auto-solvers play
+optimally from **any** position:
 
-Disks are absolutely positioned and animated with the Web Animations API. A move flies the disk
-straight up, across above the pegs and down again, and an interrupted flight (for example when
-you undo mid-move) carries on from wherever the disk is on screen.
+- **Tower of Hanoi:** the largest disk that is not on the goal has to move there exactly once, so
+  every smaller disk first goes to the spare peg, and the same reasoning repeats one disk smaller.
+- **Lights Out:** presses can happen in any order and pressing a light twice cancels out, so a
+  solution is a set of lights. Each light gives one equation in 0s and 1s; Gaussian elimination
+  solves them all at once, and on grids where some sets of presses change nothing, trying those
+  on top finds the shortest solution.
+
+Tests check both solvers against a brute-force search over every position of small boards.
+
+### Adding a game
+
+Create a folder under `src/games/` with a component that takes `GameProps`, a help component and
+an icon, then add an entry to `GAMES` in [`src/games/index.ts`](src/games/index.ts). The tab,
+its address and the help dialog follow from that entry. The shared hooks (`useGameSession`,
+`useAutoSolver`, `useCelebration`) and components cover the clock, saving, solver loop, results
+dialog and stats.
