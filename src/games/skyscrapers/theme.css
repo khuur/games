@@ -1,0 +1,18 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --sky-low: #a8b5fb;
+  --sky-mid: #747af0;
+  --sky-high: #4a43d3;
+  --sky-window: rgb(255 255 255 / 0.75);
+  --sky-ground: #3d4469;
+}
+
+:root[data-theme='dark'] {
+  --sky-low: #5b62b8;
+  --sky-mid: #8d88ff;
+  --sky-high: #c2bfff;
+  --sky-window: rgb(21 26 51 / 0.6);
+  --sky-ground: #9ba1bf;
+}

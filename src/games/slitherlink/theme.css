@@ -1,0 +1,24 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --sl-paper: #ffffff;
+  --sl-paper-edge: rgb(30 36 70 / 0.08);
+  --sl-faint: rgb(30 36 70 / 0.16);
+  --sl-clue: #1b2036;
+  --sl-dot: #3d4469;
+  --sl-line: #4a43d3;
+  --sl-glow: #19a974;
+  --sl-cross: rgb(30 36 70 / 0.42);
+}
+
+:root[data-theme='dark'] {
+  --sl-paper: #151a33;
+  --sl-paper-edge: rgb(255 255 255 / 0.06);
+  --sl-faint: rgb(255 255 255 / 0.14);
+  --sl-clue: #eceefa;
+  --sl-dot: #9ba1bf;
+  --sl-line: #a9a5ff;
+  --sl-glow: #4fe0a8;
+  --sl-cross: rgb(255 255 255 / 0.45);
+}

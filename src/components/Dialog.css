@@ -304,6 +304,75 @@
   font-style: italic;
 }
 
+/* All games */
+
+.picker-dialog {
+  width: min(760px, calc(100vw - 32px));
+}
+
+.picker-dialog h3:first-of-type {
+  margin-top: 14px;
+}
+
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.picker-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.picker-card .game-icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+}
+
+.picker-card[aria-current='page'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+@media (hover: hover) {
+  .picker-card:hover {
+    border-color: var(--border-strong);
+    background: var(--surface-hover);
+  }
+}
+
+.picker-text {
+  display: grid;
+  min-width: 0;
+}
+
+.picker-name {
+  font-weight: 900;
+}
+
+.picker-blurb {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
 /* Confirm */
 
 .confirm-dialog {

@@ -1,5 +1,6 @@
-import { CircleHelp, Moon, Sun, Volume2, VolumeX } from 'lucide-react'
+import { CircleHelp, LayoutGrid, Moon, Sun, Volume2, VolumeX } from 'lucide-react'
 import { Suspense, useEffect, useEffectEvent, useState } from 'react'
+import { GamePicker } from './components/GamePicker'
 import { GameTabs } from './components/GameTabs'
 import { HelpDialog } from './components/HelpDialog'
 import { LoadError } from './components/LoadError'
@@ -13,6 +14,8 @@ import { isBoolean, readStored, writeStored } from './lib/storage'
 import './App.css'
 
 const SITE_NAME = 'Puzzle Games'
+/** Where the full name won't fit, as on the home screen (see the manifest). */
+const SHORT_SITE_NAME = 'Puzzles'
 const LAST_GAME_KEY = 'last-game'
 
 const isGameId = (value: unknown): value is string => GAMES.some((game) => game.id === value)
@@ -28,6 +31,7 @@ export default function App() {
   // Help belongs to one game, so switching games closes it.
   const [helpFor, setHelpFor] = useState<string | null>(null)
   const helpOpen = helpFor === game.id
+  const [pickerOpen, setPickerOpen] = useState(false)
 
   // Every address names a game: "/" and unknown paths become the last game played.
   useEffect(() => {
@@ -78,6 +82,8 @@ export default function App() {
       setSoundOn((on) => !on)
     } else if (event.key === '?' && !document.querySelector('dialog[open]')) {
       setHelpFor(game.id)
+    } else if ((event.key === 'g' || event.key === 'G') && !document.querySelector('dialog[open]')) {
+      setPickerOpen(true)
     } else {
       return
     }
@@ -97,10 +103,22 @@ export default function App() {
       <header className="app-header">
         <h1 className="brand">
           <SiteLogo />
-          <span>{SITE_NAME}</span>
+          <span className="brand-full">{SITE_NAME}</span>
+          <span className="brand-short" aria-hidden="true">
+            {SHORT_SITE_NAME}
+          </span>
         </h1>
         <GameTabs games={GAMES} currentId={game.id} onSelect={(next) => navigate(next.path)} />
         <div className="header-actions">
+          <button
+            type="button"
+            className="icon-button"
+            onClick={() => setPickerOpen(true)}
+            aria-label="All games"
+            title="All games (G)"
+          >
+            <LayoutGrid aria-hidden="true" />
+          </button>
           <button
             type="button"
             className="icon-button"
@@ -140,6 +158,18 @@ export default function App() {
           </Suspense>
         </LoadError>
       </main>
+
+      {pickerOpen && (
+        <GamePicker
+          games={GAMES}
+          currentId={game.id}
+          onSelect={(next) => {
+            setPickerOpen(false)
+            navigate(next.path)
+          }}
+          onClose={() => setPickerOpen(false)}
+        />
+      )}
 
       {helpOpen && (
         <HelpDialog title={`How to play ${game.title}`} onClose={() => setHelpFor(null)}>

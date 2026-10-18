@@ -1,0 +1,20 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. */
+
+:root {
+  --tk-sun: #f39c0b;
+  --tk-moon: #5776f2;
+  --tk-cell: #ffffff;
+  --tk-given: #e9ecf7;
+  --tk-sign-bg: #ffffff;
+  --tk-sign: #2b3154;
+}
+
+:root[data-theme='dark'] {
+  --tk-sun: #ffbd2e;
+  --tk-moon: #8ea6ff;
+  --tk-cell: #1b2040;
+  --tk-given: #262c52;
+  --tk-sign-bg: #2c335f;
+  --tk-sign: #e6e8fa;
+}

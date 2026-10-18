@@ -1,0 +1,192 @@
+.sl-area {
+  position: absolute;
+  inset: 8px;
+  display: grid;
+  place-items: center;
+}
+
+.sl-board {
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.sl-svg {
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sl-board.is-locked .sl-svg {
+  cursor: default;
+}
+
+.sl-paper {
+  fill: var(--sl-paper);
+  stroke: var(--sl-paper-edge);
+  stroke-width: 1;
+}
+
+.sl-faint {
+  stroke: var(--sl-faint);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.sl-clue {
+  fill: var(--sl-clue);
+  font-weight: 900;
+  text-anchor: middle;
+  dominant-baseline: central;
+  transition:
+    fill 200ms ease,
+    opacity 200ms ease;
+  pointer-events: none;
+}
+
+.sl-clue.is-done {
+  opacity: 0.38;
+}
+
+.sl-clue.is-broken {
+  fill: var(--danger);
+}
+
+.sl-line {
+  stroke: var(--sl-line);
+  stroke-linecap: round;
+}
+
+.sl-line.is-recent {
+  animation: sl-draw 260ms ease-out;
+}
+
+.sl-line.is-broken {
+  stroke: var(--danger);
+}
+
+.sl-cross {
+  stroke: var(--sl-cross);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.sl-cross.is-recent {
+  animation: sl-fade-in 200ms ease-out;
+}
+
+.sl-dot {
+  fill: var(--sl-dot);
+  pointer-events: none;
+}
+
+.sl-dot.is-broken {
+  fill: var(--danger);
+}
+
+.sl-dot.is-hinted {
+  fill: var(--hint);
+  animation: sl-pulse 1.1s ease-in-out infinite;
+}
+
+/* Hints: shaded cells, the edges to draw or cross, and wrong ones to take back, all pulsing. */
+.sl-hint-area {
+  fill: var(--hint-soft);
+}
+
+.sl-hint-line {
+  stroke: var(--hint);
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 calc(var(--pitch) * 0.22);
+  animation: sl-pulse 1.1s ease-in-out infinite;
+}
+
+.sl-hint-cross {
+  stroke: var(--hint);
+  stroke-width: 3;
+  stroke-linecap: round;
+  animation: sl-pulse 1.1s ease-in-out infinite;
+}
+
+.sl-wrong-line {
+  stroke: var(--danger);
+  stroke-linecap: round;
+  opacity: 0.45;
+  animation: sl-pulse 1.1s ease-in-out infinite;
+}
+
+.sl-wrong-cross {
+  stroke: var(--danger);
+  stroke-width: 3;
+  stroke-linecap: round;
+  animation: sl-pulse 1.1s ease-in-out infinite;
+}
+
+/* Solved: the loop glows. */
+.sl-board.is-won .sl-line {
+  animation: sl-glow 1.4s ease-in-out 300ms 2;
+}
+
+/* Cells for the keyboard and screen readers, laid over the drawing; pointers pass through. */
+.sl-cells {
+  position: absolute;
+  display: grid;
+  pointer-events: none;
+}
+
+.sl-cell {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  pointer-events: none;
+}
+
+.sl-cell:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -4px;
+}
+
+@keyframes sl-draw {
+  from {
+    opacity: 0.2;
+  }
+}
+
+@keyframes sl-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes sl-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes sl-glow {
+  50% {
+    stroke: var(--sl-glow);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-line.is-recent,
+  .sl-cross.is-recent,
+  .sl-dot.is-hinted,
+  .sl-hint-line,
+  .sl-hint-cross,
+  .sl-wrong-line,
+  .sl-wrong-cross,
+  .sl-board.is-won .sl-line {
+    animation: none;
+  }
+}

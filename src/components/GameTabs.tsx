@@ -44,6 +44,19 @@ export function GameTabs({ games, currentId, onSelect }: GameTabsProps) {
     return () => observer.disconnect()
   }, [])
 
+  // A mouse wheel scrolls the strip sideways (trackpads already can).
+  useEffect(() => {
+    const nav = navRef.current
+    if (!nav) return
+    const onWheel = (event: WheelEvent) => {
+      if (nav.scrollWidth <= nav.clientWidth || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return
+      nav.scrollLeft += event.deltaY
+      event.preventDefault()
+    }
+    nav.addEventListener('wheel', onWheel, { passive: false })
+    return () => nav.removeEventListener('wheel', onWheel)
+  }, [])
+
   // Keep the current game's tab in view.
   useEffect(() => {
     const nav = navRef.current

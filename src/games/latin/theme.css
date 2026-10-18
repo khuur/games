@@ -1,0 +1,30 @@
+/* Colours of the Latin-square games (Skyscrapers and Calcudoku), loaded with their tab icons
+   (which use some of them) so they are ready before the games' own code arrives. */
+
+:root {
+  --lt-line: #3d4469;
+  --lt-thin: rgb(30 36 70 / 0.16);
+  --lt-cell: #ffffff;
+  --lt-peer: rgb(91 85 224 / 0.07);
+  --lt-same: rgb(91 85 224 / 0.17);
+  --lt-selected: rgb(91 85 224 / 0.28);
+  --lt-flash: #d6f3e3;
+  --lt-given: #1b2036;
+  --lt-entry: #4a43d3;
+  --lt-note: #6b7290;
+  --lt-cage: #2b3154;
+}
+
+:root[data-theme='dark'] {
+  --lt-line: #575e8c;
+  --lt-thin: rgb(255 255 255 / 0.1);
+  --lt-cell: #151a33;
+  --lt-peer: rgb(141 136 255 / 0.08);
+  --lt-same: rgb(141 136 255 / 0.19);
+  --lt-selected: rgb(141 136 255 / 0.32);
+  --lt-flash: #1d4a3a;
+  --lt-given: #eceefa;
+  --lt-entry: #a9a5ff;
+  --lt-note: #9ba1bf;
+  --lt-cage: #d7dafa;
+}

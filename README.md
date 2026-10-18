@@ -1,6 +1,7 @@
 # Puzzle Games
 
-Eleven classic puzzles as React games, each on its own tab:
+Sixteen classic puzzles as React games, each on its own tab (and all in one list behind the grid
+button, or <kbd>G</kbd>):
 
 - **Tower of Hanoi:** move the whole tower to the goal peg, one disk at a time, never putting a
   bigger disk on a smaller one.
@@ -18,6 +19,15 @@ Eleven classic puzzles as React games, each on its own tab:
 - **Queens:** place one queen in every row, column and coloured region, with no two touching.
 - **Bridges:** join numbered islands with bridges so each gets exactly its number and all connect
   (Hashiwokakero).
+- **Takuzu:** fill the grid with suns and moons: never three alike in a line, as many of each in
+  every row and column, and the = and × signs obeyed (the Tango kind).
+- **Skyscrapers:** place towers of every height once per row and column so that each clue around
+  the grid counts the towers seen from there.
+- **Calcudoku:** fill a Latin square whose cages make their numbers with their signs (the kind of
+  puzzle KenKen made famous).
+- **Star Battle:** two stars in every row, column and region, none touching.
+- **Slitherlink:** draw one loop along the dots so that each number counts the loop's sides around
+  it.
 
 Built with React 19, TypeScript and Vite. No backend: it is a static site, ready for Netlify.
 
@@ -48,14 +58,20 @@ Every game has:
 | Nonogram | Easy 8×8, Medium 10×10, Hard 10×14 | The line that proves the most cells next, and what it proves; the score is mistakes |
 | Queens | Easy 6×6, Medium 8×8, Hard 10×10, graded by technique | The next step and its reason, with the row, column or region it is about marked; the score is mistakes |
 | Bridges | Easy, Medium, Hard, graded by technique | A bridge you can be sure of, and why; the target is the number of bridges in the solution |
+| Takuzu | Easy 6×6, Medium 8×8, Hard 10×10, graded by technique | The next cell you can be sure of and the pattern that shows it; the score is moves that break a rule |
+| Skyscrapers | Easy 4×4, Medium 5×5, Hard 6×6, graded by technique | The next height and why, with the clues it comes from lit up; the score is mistakes |
+| Calcudoku | Easy 4×4 (+ −), Medium 5×5 (adds ×), Hard 6×6 (adds ÷) | The next digit and the cage, row or column that settles it; the score is mistakes |
+| Star Battle | Easy 9×9, Medium 10×10, Hard 10×10, graded by technique | The next step and its reason, with the rows, columns or regions it is about marked; the score is mistakes |
+| Slitherlink | Easy 5×5, Medium 7×7, Hard 8×8, graded by technique | The next edges you can be sure of and why; the score is moves that break a rule |
 
 Keyboard everywhere: <kbd>Z</kbd> undo, <kbd>Y</kbd> redo, <kbd>H</kbd> hint, <kbd>M</kbd> sound,
-<kbd>?</kbd> help. Each game's help explains its own keys (number keys pick towers, tubes, colours
-and digits; arrow keys move tiles or walk around grids and boards).
+<kbd>?</kbd> help, <kbd>G</kbd> all games. Each game's help explains its own keys (number keys
+pick towers, tubes, colours and digits; arrow keys move tiles or walk around grids and boards).
 
 Each game has its own address (`/hanoi`, `/lights-out`, `/15-puzzle`, `/peg-solitaire`,
-`/water-sort`, `/code-breaker`, `/minesweeper`, `/sudoku`, `/nonogram`, `/queens`, `/bridges`), and `/`
-opens the game played last.
+`/water-sort`, `/code-breaker`, `/minesweeper`, `/sudoku`, `/nonogram`, `/queens`, `/bridges`,
+`/takuzu`, `/skyscrapers`, `/calcudoku`, `/star-battle`, `/slitherlink`), and `/` opens the game
+played last.
 
 ## Development
 
@@ -100,7 +116,9 @@ src/
     index.ts     the list of games
     hanoi/  lights-out/  fifteen/  peg-solitaire/  water-sort/
     code-breaker/  minesweeper/  sudoku/  nonogram/  queens/  bridges/
+    takuzu/  skyscrapers/  calcudoku/  star-battle/  slitherlink/
                  each game: rules and solver, game state, saving, board, help, icon and colours
+    latin/       what Skyscrapers and Calcudoku share: the grid, keypad, notes, state and screen
   components/    shared UI: controls, dialogs, stats, status line, stepper, confetti…
   hooks/         shared behaviour: game session (state, clock, saving), auto-solver, routing…
   lib/           sound effects, storage, scoring, records and formatting
@@ -147,6 +165,26 @@ reducer, which keeps them easy to test. The solvers:
   each link's possible bridges, checking crossings and connections, counts the solutions; a solver
   that reasons like a person (what each number allows, crossings, bridges that would cut a group
   off, and a step of looking ahead) grades puzzles and explains hints.
+- **Takuzu:** every line that can still fit is kept as a bit mask, so a line's forced cells come
+  from what all its fitting patterns agree on. A solver that works like a person (pairs, gaps,
+  signs, counts, then whole lines and a step of looking ahead) grades puzzles; givens and signs are
+  taken away together while it still reaches the one solution.
+- **Skyscrapers:** each line's clues are checked against every order of its heights, keeping only
+  the heights that some fitting order puts in each cell. The solver starts from what single clues
+  say (a 1 or a full count, towers too tall to stand near a clue) before whole lines; clues are
+  removed while it still solves the puzzle and a search finds no second grid.
+- **Calcudoku:** a cage's digits come from listing every way to make its number that fits the rows
+  and columns. Random cages with random signs are kept when a search finds one solution and the
+  person-like solver (singles, cages, then digits a cage must keep in a line and naked pairs) gets
+  there too.
+- **Star Battle:** the stars are planted first, paired up, and each pair grows a region; the
+  regions are then reshaped until no rival solution is left. The person-like solver tries the ways
+  a unit's stars can sit apart (cells every way uses, none uses, or every way touches), regions
+  squeezed into rows and columns, and a step of looking ahead.
+- **Slitherlink:** loops are the outlines of random blobs of cells without holes. The solver uses
+  the basic rules (clues, dots with two lines or a dead end, loops closed too soon), then what all
+  the ways round a clue's corners agree on, then a step of looking ahead. Every step is sound, so
+  when it closes the loop the solution is the only one; clues are removed while it still can.
 
 Tests check the solvers against brute-force searches on small boards.
 

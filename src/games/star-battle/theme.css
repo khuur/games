@@ -1,0 +1,41 @@
+/* This game's colours, loaded with its tab icon (which uses some of them) so they are ready
+   before the game's own code arrives. The regions go round the colour wheel, as far apart as
+   ten pastels can be. */
+
+:root {
+  --sb-edge: #262b49;
+  --sb-line: rgb(30 36 70 / 0.18);
+  --sb-0: #f7b1a8;
+  --sb-1: #fbd29e;
+  --sb-2: #f3e797;
+  --sb-3: #cdeba0;
+  --sb-4: #a8e2c3;
+  --sb-5: #a6dde8;
+  --sb-6: #b3cdf8;
+  --sb-7: #d2c0f6;
+  --sb-8: #f2b6e3;
+  --sb-9: #dcd6cc;
+  --sb-star: #f5b301;
+  --sb-star-edge: #7a5300;
+  --sb-cross: rgb(30 36 70 / 0.5);
+  --sb-dot: rgb(30 36 70 / 0.3);
+}
+
+:root[data-theme='dark'] {
+  --sb-edge: #05070f;
+  --sb-line: rgb(0 0 0 / 0.35);
+  --sb-0: #8c4a43;
+  --sb-1: #8a5f31;
+  --sb-2: #7b7130;
+  --sb-3: #5b7a35;
+  --sb-4: #367457;
+  --sb-5: #2f6b78;
+  --sb-6: #3a5a8f;
+  --sb-7: #5f4f96;
+  --sb-8: #864a78;
+  --sb-9: #615b52;
+  --sb-star: #ffd34d;
+  --sb-star-edge: #3d2c00;
+  --sb-cross: rgb(255 255 255 / 0.6);
+  --sb-dot: rgb(255 255 255 / 0.35);
+}
